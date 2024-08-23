@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Nova;
+use Illuminate\Support\Facades\Gate;
+use App\Nova\Dashboards\ContestOverview;
 use Laravel\Nova\NovaApplicationServiceProvider;
 
 class NovaServiceProvider extends NovaApplicationServiceProvider
@@ -26,9 +27,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function routes()
     {
         Nova::routes()
-                ->withAuthenticationRoutes(default: true)
-                ->withPasswordResetRoutes()
-                ->register();
+            ->withAuthenticationRoutes(default: true)
+            ->withPasswordResetRoutes()
+            ->register();
     }
 
     /**
@@ -55,7 +56,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function dashboards()
     {
         return [
-            new \App\Nova\Dashboards\Main,
+            //new \App\Nova\Dashboards\Main,
+            new ContestOverview(),
         ];
     }
 

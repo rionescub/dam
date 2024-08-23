@@ -43,12 +43,51 @@ class Score extends Resource
     {
         return [
             ID::make()->sortable(),
-            BelongsTo::make('User')->rules('required'),
-            BelongsTo::make('Work')->rules('required'),
-            Number::make('Creativity Score')->min(0)->max(10)->rules('required', 'integer', 'min:0', 'max:10'),
-            Number::make('Link Score')->min(0)->max(10)->rules('required', 'integer', 'min:0', 'max:10'),
-            Number::make('Aesthetic Score')->min(0)->max(10)->rules('required', 'integer', 'min:0', 'max:10'),
-            Number::make('Total Score')->min(0)->max(30)->readonly(),
+
+            BelongsTo::make('User')
+                ->rules('required'),
+
+            BelongsTo::make('Work')
+                ->rules('required'),
+
+            Number::make('Creativity Score')
+                ->min(0)
+                ->max(10)
+                ->rules(
+                    'required',
+                    'integer',
+                    'min:0',
+                    'max:10'
+                )
+                ->sortable(),
+
+            Number::make('Link Score')
+                ->min(0)
+                ->max(10)
+                ->rules(
+                    'required',
+                    'integer',
+                    'min:0',
+                    'max:10'
+                )
+                ->sortable(),
+
+            Number::make('Aesthetic Score')
+                ->min(0)
+                ->max(10)
+                ->rules(
+                    'required',
+                    'integer',
+                    'min:0',
+                    'max:10'
+                )
+                ->sortable(),
+
+            Number::make('Total Score')
+                ->min(0)
+                ->max(30)
+                ->readonly()
+                ->sortable(),
         ];
     }
 

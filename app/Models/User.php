@@ -17,7 +17,8 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
     ];
@@ -42,6 +43,33 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'date_of_birth' => 'date',
         ];
+    }
+
+    // add the relationships
+    public function contests()
+    {
+        return $this->belongsToMany(Contest::class);
+    }
+
+    public function createdContests()
+    {
+        return $this->hasMany(Contest::class, 'user_id');
+    }
+
+    public function works()
+    {
+        return $this->hasMany(Work::class);
+    }
+
+    public function scores()
+    {
+        return $this->hasMany(Score::class);
+    }
+
+    public function diplomas()
+    {
+        return $this->hasMany(Diploma::class);
     }
 }

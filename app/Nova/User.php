@@ -2,12 +2,15 @@
 
 namespace App\Nova;
 
+use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Date;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Select;
 use Illuminate\Validation\Rules;
 use Laravel\Nova\Fields\Gravatar;
-use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Password;
-use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Actions\ExportAsCsv;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class User extends Resource
@@ -24,7 +27,11 @@ class User extends Resource
      *
      * @var string
      */
-    public static $title = 'name';
+    public function title()
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
+
 
     /**
      * The columns that should be searched.
@@ -32,7 +39,10 @@ class User extends Resource
      * @var array
      */
     public static $search = [
-        'id', 'name', 'email',
+        'id',
+        'first_name',
+        'last_name',
+        'email',
     ];
 
     /**
@@ -48,9 +58,28 @@ class User extends Resource
 
             Gravatar::make()->maxWidth(50),
 
-            Text::make('Name')
+            Text::make('First Name')
                 ->sortable()
                 ->rules('required', 'max:255'),
+
+            Text::make('Last Name')
+                ->sortable()
+                ->rules('required', 'max:255'),
+
+            Select::make('Role')
+                ->options([
+                    'admin' => 'Admin',
+                    'organizer' => 'Organizer',
+                    'judge' => 'Judge',
+                    'teacher' => 'Teacher',
+                    'contestant' => 'Contestant',
+                    'user' => 'User',
+                ])
+                ->displayUsingLabels()
+                ->sortable()
+                ->rules('required'),
+            Date::make('Date of Birth')
+                ->rules('required'),
 
             Text::make('Email')
                 ->sortable()
@@ -106,6 +135,20 @@ class User extends Resource
      */
     public function actions(NovaRequest $request)
     {
-        return [];
+        return [
+            ExportAsCsv::make()->withFormat(
+                function ($model) {
+                    return [
+                        'id' => $model->id,
+                        'first_name' => $model->first_name,
+                        'last_name' => $model->last_name,
+                        'email' => $model->email,
+                        'role' => $model->role,
+                        'date_of_birth' => $model->date_of_birth,
+                    ];
+                }
+            ),
+
+        ];
     }
 }

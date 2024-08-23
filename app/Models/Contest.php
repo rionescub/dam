@@ -11,23 +11,32 @@ class Contest extends Model
 
     protected $fillable = [
         'name',
-        'start_date',
-        'end_date',
         'type',
+        'phase',
         'parent_contest_id',
         'rules',
         'description',
         'user_id'
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'start_date' => 'datetime',
+            'end_date' => 'datetime',
+            'jury_date' => 'datetime',
+            'ceremony_date' => 'datetime',
+        ];
+    }
+
+
     public function parentContest()
     {
         return $this->belongsTo(Contest::class, 'parent_contest_id');
     }
-
-    public function user()
+    public function creator()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function users()
@@ -38,5 +47,10 @@ class Contest extends Model
     public function works()
     {
         return $this->hasMany(Work::class);
+    }
+
+    public function sponsors()
+    {
+        return $this->belongsToMany(Sponsor::class);
     }
 }

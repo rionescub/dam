@@ -16,7 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->date('start_date');
             $table->date('end_date');
-            $table->string('type');
+            $table->date('jury_date');
+            $table->date('ceremony_date');
+            $table->string('type')->nullable();
+            $table->string('phase');
             $table->foreignId('parent_contest_id')->nullable()->constrained('contests')->onDelete('cascade');
             $table->text('rules');
             $table->text('description');

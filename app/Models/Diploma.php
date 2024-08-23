@@ -34,6 +34,6 @@ class Diploma extends Model
 
     public function score()
     {
-        return $this->hasOne(Score::class);
+        return $this->belongsTo(Score::class);
     }
 }

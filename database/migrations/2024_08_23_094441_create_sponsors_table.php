@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('works', function (Blueprint $table) {
+        Schema::create('sponsors', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('image')->nullable();
-            $table->string('video_url')->nullable();
-            $table->text('description');
+            $table->string('url')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('contest_sponsor', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('contest_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->unsignedInteger('rank')->default(1);
-            $table->unsignedInteger('total_score')->default(0);
+            $table->foreignId('sponsor_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -30,6 +32,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('works');
+        Schema::dropIfExists('contest_sponsor');
+        Schema::dropIfExists('sponsors');
     }
 };

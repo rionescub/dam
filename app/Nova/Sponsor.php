@@ -2,21 +2,22 @@
 
 namespace App\Nova;
 
-use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsTo;
-use Laravel\Nova\Fields\HasOne;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Textarea;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Image;
+use Laravel\Nova\Fields\URL;
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Resource;
 
-class Diploma extends Resource
+class Sponsor extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
-     * @var class-string<\App\Models\Diploma>
+     * @var class-string<\App\Models\Sponsor>
      */
-    public static $model = \App\Models\Diploma::class;
+    public static $model = \App\Models\Sponsor::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -45,20 +46,17 @@ class Diploma extends Resource
         return [
             ID::make()->sortable(),
 
-            BelongsTo::make('User')
-                ->rules('required'),
+            Text::make('Name')
+                ->sortable()
+                ->rules('required', 'max:255'),
 
-            BelongsTo::make('Contest')
-                ->rules('required'),
+            Image::make('Image')
+                ->rules('nullable', 'image'),
 
-            BelongsTo::make('Work')
-                ->rules('required'),
+            URL::make('Url')
+                ->rules('nullable', 'url'),
 
-            HasOne::make('Score')
-                ->rules('required'),
-
-            Textarea::make('Description')
-                ->rules('required'),
+            BelongsToMany::make('Contests'),
         ];
     }
 

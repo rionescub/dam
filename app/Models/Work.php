@@ -31,6 +31,11 @@ class Work extends Model
 
     public function scores()
     {
-        return $this->hasMany(Score::class);
+        return $this->hasOne(Score::class);
+    }
+
+    public function details()
+    {
+        return $this->hasOne(WorkDetails::class);
     }
 }

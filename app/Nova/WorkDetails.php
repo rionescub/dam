@@ -2,21 +2,21 @@
 
 namespace App\Nova;
 
-use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsTo;
-use Laravel\Nova\Fields\HasOne;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Textarea;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Date;
+use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Resource;
 
-class Diploma extends Resource
+class WorkDetails extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
-     * @var class-string<\App\Models\Diploma>
+     * @var class-string<\App\Models\WorkDetails>
      */
-    public static $model = \App\Models\Diploma::class;
+    public static $model = \App\Models\WorkDetails::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -32,6 +32,11 @@ class Diploma extends Resource
      */
     public static $search = [
         'id',
+        'full_name',
+        'phone',
+        'school',
+        'mentor',
+        'school_director'
     ];
 
     /**
@@ -45,20 +50,30 @@ class Diploma extends Resource
         return [
             ID::make()->sortable(),
 
-            BelongsTo::make('User')
-                ->rules('required'),
+            BelongsTo::make('Work'),
 
-            BelongsTo::make('Contest')
-                ->rules('required'),
+            Text::make('Full Name')
+                ->sortable()
+                ->rules('required', 'max:255'),
 
-            BelongsTo::make('Work')
-                ->rules('required'),
+            Date::make('Date of Birth')
+                ->rules('required', 'date'),
 
-            HasOne::make('Score')
-                ->rules('required'),
+            Text::make('Phone')
+                ->sortable()
+                ->rules('required', 'max:20'),
 
-            Textarea::make('Description')
-                ->rules('required'),
+            Text::make('Mentor')
+                ->sortable()
+                ->rules('nullable', 'max:255'),
+
+            Text::make('School')
+                ->sortable()
+                ->rules('nullable', 'max:255'),
+
+            Text::make('School Director')
+                ->sortable()
+                ->rules('nullable', 'max:255'),
         ];
     }
 
