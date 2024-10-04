@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('work_id')->constrained()->onDelete('cascade');
+            $table->foreignId('team_id')->constrained();
             $table->unsignedTinyInteger('creativity_score')->default(0); // Score from 0 to 10
             $table->unsignedTinyInteger('link_score')->default(0);       // Score from 0 to 10
             $table->unsignedTinyInteger('aesthetic_score')->default(0);  // Score from 0 to 10

@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Scopes\CurrentTeam;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Diploma extends Model
 {
@@ -16,6 +17,16 @@ class Diploma extends Model
         'score_id',
         'description'
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new CurrentTeam);
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
+    }
 
     public function user()
     {

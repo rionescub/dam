@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Scopes\CurrentTeam;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Work extends Model
 {
@@ -18,6 +19,16 @@ class Work extends Model
         'user_id',
         'rank'
     ];
+    protected static function booted()
+    {
+        static::addGlobalScope(new CurrentTeam);
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
+    }
+
 
     public function contest()
     {

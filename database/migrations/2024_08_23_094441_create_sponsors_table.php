@@ -23,6 +23,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('contest_id')->constrained()->onDelete('cascade');
             $table->foreignId('sponsor_id')->constrained()->onDelete('cascade');
+            $table->foreignId('team_id')->constrained();
             $table->timestamps();
         });
     }

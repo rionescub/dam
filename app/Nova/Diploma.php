@@ -2,11 +2,12 @@
 
 namespace App\Nova;
 
-use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsTo;
-use Laravel\Nova\Fields\HasOne;
 use Laravel\Nova\Fields\ID;
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\HasOne;
 use Laravel\Nova\Fields\Textarea;
+use Laravel\Nova\Fields\BelongsTo;
+use App\Nova\Actions\GenerateDiplomaPDF;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Diploma extends Resource
@@ -17,6 +18,7 @@ class Diploma extends Resource
      * @var class-string<\App\Models\Diploma>
      */
     public static $model = \App\Models\Diploma::class;
+
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -103,6 +105,8 @@ class Diploma extends Resource
      */
     public function actions(NovaRequest $request)
     {
-        return [];
+        return [
+            (new GenerateDiplomaPDF())->showInline(),
+        ];
     }
 }

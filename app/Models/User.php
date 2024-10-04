@@ -3,13 +3,15 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Scopes\CurrentTeam;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -47,6 +49,16 @@ class User extends Authenticatable
         ];
     }
 
+    protected static function booted()
+    {
+        static::addGlobalScope(new CurrentTeam);
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
+    }
+
     // add the relationships
     public function contests()
     {
@@ -71,5 +83,24 @@ class User extends Authenticatable
     public function diplomas()
     {
         return $this->hasMany(Diploma::class);
+    }
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class);
+    }
+
+    public function currentTeam()
+    {
+        return $this->belongsTo(Team::class, 'current_team_id');
+    }
+
+    public function is_admin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function is_organizer()
+    {
+        return $this->role === 'organizer' || $this->role === 'admin';
     }
 }

@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Scopes\CurrentTeam;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class WorkDetails extends Model
 {
@@ -18,6 +19,16 @@ class WorkDetails extends Model
         'school',
         'school_director',
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new CurrentTeam);
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
+    }
 
     /**
      * Get the work that owns the details.

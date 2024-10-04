@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Scopes\CurrentTeam;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Score extends Model
 {
@@ -17,6 +18,16 @@ class Score extends Model
         'aesthetic_score',
         'total_score'
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new CurrentTeam);
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
+    }
 
     public function user()
     {

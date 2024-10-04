@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('type')->nullable();
             $table->string('phase');
             $table->foreignId('parent_contest_id')->nullable()->constrained('contests')->onDelete('cascade');
+            $table->foreignId('team_id')->nullable();
             $table->text('rules');
             $table->text('description');
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Belongs to a user

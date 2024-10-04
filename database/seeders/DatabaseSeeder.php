@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Carbon\Carbon;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\User;
+use App\Models\Team;
 use App\Models\Contest;
 use App\Models\Work;
 use App\Models\Score;
@@ -20,82 +20,103 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-
+        // Insert a specific user
         DB::table('users')->insert([
             [
                 'first_name' => 'Bogdan',
                 'last_name' => 'Ionescu',
                 'email' => 'office@developer-site.ro',
+                'role' => 'admin',
                 'password' => Hash::make('Testing12345#'),
                 'email_verified_at' => Carbon::now(),
             ]
         ]);
 
-        // Create Users
+        // Create teams
+        $teams = Team::factory(5)->create();
+        // Assign the first user to the first team
+        $team = $teams->first();
+        $user = User::where('email', 'office@developer-site.ro')->first();
+        $user->teams()->attach($team->id);
+        $user->current_team_id = $team->id;
+        $user->save();
+
+        // Create additional users and assign them to teams
         $users = User::factory(20)->create();
-
-        // Create 5 Contests for the first user
-        $firstUser = $users->first();
-        $contests = Contest::factory(5)->create();
-
-
-        // Create Works
-        // create 1 work for each user except first and attribute them to a random contest
         foreach ($users as $user) {
-            if ($user->id !== $firstUser->id) {
-                $randomContest = $contests->random();
-                $work = Work::factory()->create([
-                    'user_id' => $user->id,
-                    'contest_id' => $randomContest->id
-                ]);
+            // Assign each user to a random team
+            $team = $teams->random();
+            $team->users()->attach($user->id);
+            $user->current_team_id = $team->id;
+            $user->save();
+        }
 
-                // Assign the user to the contest
-                $user->contests()->attach($randomContest->id);
+        foreach ($teams as $team) {
+            // For each team, create contests for users belonging to the team
+            $usersInTeam = $team->users;
+            foreach ($usersInTeam as $user) {
+                Contest::factory()->create([
+                    'user_id' => $user->id,
+                    'team_id' => $team->id,
+                ]);
             }
         }
 
-        // Create Scores
-        // create 1 score for each work
-        Work::all()->each(function ($work) {
-            Score::factory()->create([
-                'user_id' => $work->user_id,
-                'work_id' => $work->id,
-            ]);
-        });
-
-        // Set rank for diploma based on total_score for each
-        foreach ($contests as $contest) {
-            // Join works with scores and order by total_score in descending order
-            $works = $contest->works()
-                ->join('scores', 'works.id', '=', 'scores.work_id')
-                ->orderByDesc('scores.total_score')
-                ->select('works.*', 'scores.total_score')
-                ->get();
-
-            // Update the rank for each work based on its position in the sorted list
-            $works->each(function ($work, $index) {
-                $work->update(['rank' => $index + 1]);
-                $work->update(['total_score' => $work->scores->sum('total_score')]);
-            });
+        // Create works for each user and ensure that the contest belongs to the same team
+        foreach ($teams as $team) {
+            $usersInTeam = $team->users;
+            foreach ($usersInTeam as $user) {
+                $contestsInTeam = Contest::where('team_id', $team->id)->get();
+                $randomContest = $contestsInTeam->random();
+                Work::factory()->create([
+                    'user_id' => $user->id,
+                    'contest_id' => $randomContest->id,
+                    'team_id' => $team->id, // Ensure the work belongs to the same team
+                ]);
+            }
         }
 
-
-        // Create Diplomas
-        // create 3 diplomas for the works/user combination in rank 1, 2 or 3 for each contest
-        foreach ($contests as $contest) {
-            $topWorks = $contest->works()->where('rank', '<=', 3)->get();
-            foreach ($topWorks as $work) {
-                Diploma::factory()->create([
+        // Create scores for works ensuring that all entities belong to the same team
+        foreach ($teams as $team) {
+            $worksInTeam = Work::where('team_id', $team->id)->get();
+            foreach ($worksInTeam as $work) {
+                Score::factory()->create([
                     'user_id' => $work->user_id,
-                    'contest_id' => $work->contest_id,
                     'work_id' => $work->id,
+                    'team_id' => $team->id, // Ensure the score belongs to the same team
                 ]);
+            }
+        }
+
+        // Assign ranks to works based on total score, ensuring they belong to the same team
+        foreach ($teams as $team) {
+            $contestsInTeam = Contest::where('team_id', $team->id)->get();
+            foreach ($contestsInTeam as $contest) {
+                $works = $contest->works()
+                    ->join('scores', 'works.id', '=', 'scores.work_id')
+                    ->orderByDesc('scores.total_score')
+                    ->select('works.*', 'scores.total_score')
+                    ->get();
+
+                // Assign rank to each work
+                $works->each(function ($work, $index) {
+                    $work->update(['rank' => $index + 1]);
+                });
+            }
+        }
+
+        foreach ($teams as $team) {
+            $contestsInTeam = Contest::where('team_id', $team->id)->get();
+            foreach ($contestsInTeam as $contest) {
+                $topWorks = $contest->works()->where('rank', '<=', 3)->get();
+                foreach ($topWorks as $work) {
+                    Diploma::factory()->create([
+                        'user_id' => $work->user_id,
+                        'contest_id' => $work->contest_id,
+                        'work_id' => $work->id,
+                        'team_id' => $team->id,
+                    ]);
+                }
             }
         }
     }

@@ -59,7 +59,7 @@ return [
     |
     */
 
-    'path' => '/nova',
+    'path' => '/admin',
 
     /*
     |--------------------------------------------------------------------------
@@ -107,7 +107,6 @@ return [
 
     'api_middleware' => [
         'nova',
-        Authenticate::class,
         Authorize::class,
     ],
 

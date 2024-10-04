@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Scopes\CurrentTeam;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,7 +30,15 @@ class Contest extends Model
         ];
     }
 
+    protected static function booted()
+    {
+        static::addGlobalScope(new CurrentTeam);
+    }
 
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
+    }
     public function parentContest()
     {
         return $this->belongsTo(Contest::class, 'parent_contest_id');

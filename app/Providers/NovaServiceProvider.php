@@ -27,7 +27,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function routes()
     {
         Nova::routes()
-            ->withAuthenticationRoutes(default: true)
+            ->withAuthenticationRoutes()
             ->withPasswordResetRoutes()
             ->register();
     }
@@ -42,9 +42,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function gate()
     {
         Gate::define('viewNova', function ($user) {
-            return in_array($user->email, [
-                //
-            ]);
+            return $user->is_organizer();
         });
     }
 
@@ -56,7 +54,6 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function dashboards()
     {
         return [
-            //new \App\Nova\Dashboards\Main,
             new ContestOverview(),
         ];
     }
