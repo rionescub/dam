@@ -28,7 +28,7 @@ class WorkFactory extends Factory
     {
         return [
             'name' => $this->faker->sentence(3),
-            'image' => $this->faker->imageUrl(),
+            'file_path' => $this->faker->imageUrl(),
             'video_url' => $this->faker->url(),
             'description' => $this->faker->paragraph(),
             'contest_id' => Contest::factory(),

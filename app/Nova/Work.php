@@ -7,9 +7,11 @@ use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\File;
+use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Actions\ExportAsCsv;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -21,7 +23,6 @@ class Work extends Resource
      * @var class-string<\App\Models\Work>
      */
     public static $model = \App\Models\Work::class;
-
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -37,7 +38,7 @@ class Work extends Resource
      */
     public static $search = [
         'id',
-        'name'
+        'name',
     ];
 
     /**
@@ -54,22 +55,30 @@ class Work extends Resource
                 ->sortable()
                 ->rules('required', 'max:255'),
 
+            Textarea::make('Description')
+                ->rules('required'),
+
             Image::make('Image')
                 ->nullable(),
 
             Text::make('Video URL')
                 ->nullable(),
 
-            Textarea::make('Description')
-                ->rules('required'),
+            File::make('File', 'file_path')
+                ->disk('public')
+                ->nullable(), // Field to handle artwork uploads
 
             Number::make('Rank')
                 ->min(1)
                 ->readonly()
                 ->rules('required', 'integer', 'min:1'),
 
-            Number::Make('Total Score')
+            Number::make('Total Score')
                 ->readonly(),
+
+            Boolean::make('Is Finalized')
+                ->readonly() // Prevents this field from being edited manually in Nova
+                ->sortable(),
 
             BelongsTo::make('Contest')
                 ->rules('required'),
@@ -128,8 +137,7 @@ class Work extends Resource
                     return [
                         'id' => $model->getKey(),
                         'name' => $model->name,
-                        'image' => $model->image,
-                        'video_url' => $model->video_url,
+                        'file_path' => $model->file_path, // Added file_path to CSV export
                         'description' => $model->description,
                         'rank' => $model->rank,
                         'total_score' => $model->total_score,

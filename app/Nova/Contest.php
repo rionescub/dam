@@ -118,6 +118,14 @@ class Contest extends Resource
                 ->onlyOnIndex(),
 
             BelongsToMany::make('Sponsors'),
+
+            Select::make('Team')
+                ->options(function () {
+                    return \App\Models\Team::all()->pluck('name', 'id');
+                })
+                ->rules('required')
+                ->default(auth()->user()->current_team_id)
+                ->hideFromIndex(),
         ];
     }
 

@@ -12,20 +12,24 @@ use Symfony\Component\HttpFoundation\Response;
 class DiplomaApiController extends Controller
 {
     /**
-     * View all diplomas of the authenticated user.
+     * View all diplomas of the authenticated user within their team.
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
         $user = $request->user();
-        $diplomas = Diploma::where('user_id', $user->id)->get();
+
+        // Get diplomas that belong to the user's team
+        $diplomas = Diploma::where('user_id', $user->id)
+            ->where('team_id', $user->current_team_id)
+            ->get();
 
         return response()->json($diplomas);
     }
 
     /**
-     * Download a specific diploma as a PDF.
+     * Download a specific diploma as a PDF, ensuring it belongs to the user's team.
      *
      * @param  int  $id
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\JsonResponse
@@ -33,7 +37,11 @@ class DiplomaApiController extends Controller
     public function download(Request $request, $id)
     {
         $user = $request->user();
-        $diploma = Diploma::where('user_id', $user->id)->findOrFail($id);
+
+        // Fetch the diploma and ensure it belongs to the user's team
+        $diploma = Diploma::where('user_id', $user->id)
+            ->where('team_id', $user->current_team_id)
+            ->findOrFail($id);
 
         // Generate PDF from the diploma data
         $pdf = Pdf::loadView('pdf.diploma', compact('diploma'))
@@ -43,7 +51,7 @@ class DiplomaApiController extends Controller
         $fileName = 'diplomas/diploma_' . $diploma->id . '.pdf';
         Storage::put($fileName, $pdf->output());
 
-        // Optionally, you could return the file from storage if you want to save it permanently
+        // Return the file from storage and delete it after download
         return response()->download(storage_path("app/{$fileName}"), "diploma_{$diploma->id}.pdf")
             ->deleteFileAfterSend(true);
     }

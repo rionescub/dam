@@ -1,17 +1,19 @@
+
 <?php
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\UserApiController;
 use App\Http\Controllers\Api\WorkApiController;
 use App\Http\Controllers\Api\ScoreApiController;
 use App\Http\Controllers\Api\ContestApiController;
 use App\Http\Controllers\Api\DiplomaApiController;
-
-
+use App\Http\Controllers\Api\SponsorsApiController;
+use App\Http\Controllers\Api\GalleryApiController;
+use App\Models\Gallery;
 
 Route::middleware('api')->group(function () {
-
     // Login route
     Route::post('/login', [UserApiController::class, 'login']);
 
@@ -20,14 +22,25 @@ Route::middleware('api')->group(function () {
 
     Route::get('/user', [UserApiController::class, 'user'])->middleware('auth:sanctum');
 
+    Route::post('/register', [UserApiController::class, 'register']);
+
+    Route::post('/contact', [ContactController::class, 'store']);
+
+    Route::get('/gallery', [GalleryApiController::class, 'index']);
+
+
     // User routes
     Route::group(['middleware' => 'auth:sanctum'], function () {
-
         // User routes
         Route::get('/user', [UserApiController::class, 'viewUser']);
         Route::put('/user', [UserApiController::class, 'updateUser']);
         Route::delete('/user', [UserApiController::class, 'deleteUser']);
-        Route::post('/user/notifications', [UserApiController::class, 'setNotifications']);
+        Route::get('/user/artworks', [WorkApiController::class, 'getUserArtworks']);
+        Route::get('verify-email/{token}', [UserApiController::class, 'verifyEmail']);
+        Route::post('forgot-password', [UserApiController::class, 'sendResetLinkEmail']);
+
+
+        //Route::post('/user/notifications', [UserApiController::class, 'setNotifications']);
 
         // Diploma routes
         Route::get('/diplomas', [DiplomaApiController::class, 'index']);
@@ -37,6 +50,7 @@ Route::middleware('api')->group(function () {
         Route::get('/contests', [ContestApiController::class, 'index']);
         Route::get('/contests/{id}', [ContestApiController::class, 'show']);
 
+        // Work routes
         Route::get('/works', [WorkApiController::class, 'index']);
         Route::get('/works/{id}', [WorkApiController::class, 'show']);
         Route::post('/works', [WorkApiController::class, 'store']);
@@ -47,8 +61,12 @@ Route::middleware('api')->group(function () {
         Route::get('/scores', [ScoreApiController::class, 'index']);
         Route::get('/scores/{id}', [ScoreApiController::class, 'show']);
         Route::post('/scores', [ScoreApiController::class, 'store']);
-        Route::put('/scores/{id}', [ScoreApiController::class, 'update']);
+        Route::put('/scores/{id}/update', [ScoreApiController::class, 'update']);
+        Route::put('/scores/{id}/finalize', [ScoreApiController::class, 'finalize']);
     });
+
+    // Sponsor routes
+    Route::get('/sponsors', [SponsorsApiController::class, 'index']);
 
     // Test route
     Route::get('/test', function () {

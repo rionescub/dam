@@ -10,6 +10,7 @@ use Laravel\Nova\Fields\Select;
 use Illuminate\Validation\Rules;
 use Laravel\Nova\Fields\Gravatar;
 use Laravel\Nova\Fields\Password;
+use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Actions\ExportAsCsv;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -55,40 +56,26 @@ class User extends Resource
     {
         return [
             ID::make()->sortable(),
+            Text::make('First Name')->sortable()->rules('required', 'max:255'),
+            Text::make('Last Name')->sortable()->rules('required', 'max:255'),
+            Select::make('Role')->options([
+                'admin' => 'Admin',
+                'organizer' => 'Organizer',
+                'judge' => 'Judge',
+                'teacher' => 'Teacher',
+                'contestant' => 'Contestant',
+                'user' => 'User',
+            ])->displayUsingLabels()->sortable()->rules('required'),
 
-            Gravatar::make()->maxWidth(50),
+            Date::make('Date of Birth')->rules('required'),
 
-            Text::make('First Name')
-                ->sortable()
-                ->rules('required', 'max:255'),
-
-            Text::make('Last Name')
-                ->sortable()
-                ->rules('required', 'max:255'),
-
-            Select::make('Role')
-                ->options([
-                    'admin' => 'Admin',
-                    'organizer' => 'Organizer',
-                    'judge' => 'Judge',
-                    'teacher' => 'Teacher',
-                    'contestant' => 'Contestant',
-                    'user' => 'User',
-                ])
-                ->displayUsingLabels()
-                ->sortable()
-                ->rules('required'),
-            Date::make('Date of Birth')
-                ->rules('required'),
-
-            Text::make('Email')
-                ->sortable()
-                ->rules('required', 'email', 'max:254')
+            Text::make('Email')->sortable()->rules('required', 'email', 'max:254')
                 ->creationRules('unique:users,email')
                 ->updateRules('unique:users,email,{{resourceId}}'),
 
-            Password::make('Password')
-                ->onlyOnForms()
+            BelongsTo::make('Current Team', 'currentTeam', Team::class)->nullable(),
+
+            Password::make('Password')->onlyOnForms()
                 ->creationRules('required', Rules\Password::defaults())
                 ->updateRules('nullable', Rules\Password::defaults()),
         ];

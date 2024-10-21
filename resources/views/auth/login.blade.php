@@ -4,7 +4,11 @@
 @section('content')
     <div class="flex items-center justify-center bg-gray-100">
         <div class="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
-            <h2 class="text-2xl font-bold text-center text-gray-900">{{ __('Login') }}</h2>
+            <div class="flex items-center justify-center">
+                <a href="{{ url('/') }}">
+                    <img src="{{ asset('dam_logo.png') }}" alt="{{ config('app.name', 'Laravel') }}" class="w-48 h-auto">
+                </a>
+            </div>
 
             <form class="space-y-6" method="POST" action="{{ route('login') }}">
                 @csrf

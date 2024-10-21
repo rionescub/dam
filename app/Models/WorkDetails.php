@@ -12,12 +12,18 @@ class WorkDetails extends Model
 
     protected $fillable = [
         'work_id',
-        'full_name',
-        'date_of_birth',
-        'phone',
+        'team_id',
+        'full_name', // Contestant Name
+        'country',
+        'county',
+        'city',
+        'phone', // Mentor Phone
         'mentor',
         'school',
-        'school_director',
+        'school_director', // Optional (can be removed if not used)
+        'year', // Year (Class)
+        'age_group', // Age group (e.g., 6-11, 14-18)
+        'type', // Type of artwork
     ];
 
     protected static function booted()
@@ -25,16 +31,13 @@ class WorkDetails extends Model
         static::addGlobalScope(new CurrentTeam);
     }
 
-    public function team()
-    {
-        return $this->belongsTo(Team::class);
-    }
-
-    /**
-     * Get the work that owns the details.
-     */
     public function work()
     {
         return $this->belongsTo(Work::class);
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
     }
 }

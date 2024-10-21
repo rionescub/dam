@@ -2,37 +2,74 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 use App\Models\Work;
 use App\Models\Contest;
+use App\Models\WorkDetails;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class WorkApiController extends Controller
 {
     /**
-     * Get a list of works based on the user's role.
+     * Get a list of works based on the user's role and team.
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
         $user = $request->user();
+        $teamId = $user->current_team_id;
 
-        if ($user->role === 'judge') {
-            // Fetch works related to contests the judge is assigned to
-            $contests = Contest::where('judge_id', $user->id)->pluck('id');
-            $works = Work::whereIn('contest_id', $contests)->get();
+        // Define the per page count, defaulting to 8 if not provided.
+        $perPage = $request->get('per_page', 8);
+
+        if ($user->role === 'admin') {
+            // Admins can view all works for their team
+            $works = Work::with('details')
+                ->where('team_id', $teamId)
+                ->paginate($perPage);
+        } elseif ($user->role === 'judge') {
+            // Judges can view works for contests they are judging within their team
+            $contests = Contest::where('team_id', $teamId)
+                ->where('judge_id', $user->id)
+                ->pluck('id');
+            $works = Work::whereIn('contest_id', $contests)
+                ->with('details')
+                ->where('team_id', $teamId)
+                ->paginate($perPage);
         } else {
-            // Fetch only works belonging to the user
-            $works = Work::where('user_id', $user->id)->get();
+            // Other users can only view their own works within their team
+            $works = Work::where('user_id', $user->id)
+                ->where('team_id', $teamId)
+                ->with('details')
+                ->paginate($perPage);
         }
 
         return response()->json($works);
     }
 
     /**
-     * Get an individual work by ID.
+     * Get artworks for the logged-in user.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUserArtworks(Request $request)
+    {
+        $user = $request->user();
+        $teamId = $user->current_team_id;
+
+        $artworks = Work::where('user_id', $user->id)
+            ->where('team_id', $teamId)
+            ->with('details')
+            ->get();
+
+        return response()->json($artworks);
+    }
+
+    /**
+     * Show a specific work based on ID and user's team.
      *
      * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
@@ -40,15 +77,21 @@ class WorkApiController extends Controller
     public function show(Request $request, $id)
     {
         $user = $request->user();
-        $work = Work::findOrFail($id);
+        $teamId = $user->current_team_id;
 
-        // Check if the user is allowed to view the work
+        $work = Work::with('details')
+            ->where('team_id', $teamId)
+            ->findOrFail($id);
+
         if ($user->role === 'judge') {
-            $contests = Contest::where('judge_id', $user->id)->pluck('id');
+            $contests = Contest::where('team_id', $teamId)
+                ->where('judge_id', $user->id)
+                ->pluck('id');
+
             if (!in_array($work->contest_id, $contests->toArray())) {
                 return response()->json(['message' => 'Unauthorized'], 403);
             }
-        } elseif ($work->user_id !== $user->id) {
+        } elseif ($user->role !== 'admin' && $work->user_id !== $user->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -63,20 +106,41 @@ class WorkApiController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate request data
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'contest_id' => 'required|exists:contests,id',
-            'file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048', // Example of file upload validation
+            'file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'video_url' => 'nullable|url',
+            'age_group' => 'required|string|max:20',
+            'full_name' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'country' => 'nullable|string|max:255',
+            'county' => 'nullable|string|max:255',
+            'school' => 'nullable|string|max:255',
+            'year' => 'required|string|max:4',
+            'mentor' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
         ]);
 
-        $user = $request->user();
+        $user = Auth::user();
+        $contest = Contest::findOrFail($request->contest_id);
 
+        // Check if the current date is within the submission period
+        $currentDate = Carbon::now();
+        if ($currentDate->lt($contest->start_date) || $currentDate->gt($contest->end_date)) {
+            return response()->json(['message' => 'Submissions are only allowed between the contest start and end dates.'], 403);
+        }
+
+        // Save work details in the Work model
         $work = new Work();
-        $work->title = $request->title;
+        $work->name = $request->title;
         $work->description = $request->description;
         $work->contest_id = $request->contest_id;
         $work->user_id = $user->id;
+        $work->team_id = $user->current_team_id;
 
         // Handle file upload
         if ($request->hasFile('file')) {
@@ -84,7 +148,28 @@ class WorkApiController extends Controller
             $work->file_path = $path;
         }
 
+        // Save the video URL if provided
+        if ($request->filled('video_url')) {
+            $work->video_url = $request->video_url;
+        }
+
         $work->save();
+
+        // Save the work details in the WorkDetails model
+        $workDetails = new WorkDetails();
+        $workDetails->work_id = $work->id;
+        $workDetails->full_name = $request->full_name;
+        $workDetails->age_group = $request->age_group;
+        $workDetails->city = $request->city;
+        $workDetails->type = $request->type;
+        $workDetails->country = $request->country;
+        $workDetails->county = $request->county;
+        $workDetails->school = $request->school;
+        $workDetails->year = $request->year;
+        $workDetails->mentor = $request->mentor;
+        $workDetails->phone = $request->phone;
+
+        $workDetails->save();
 
         return response()->json(['message' => 'Work created successfully', 'work' => $work], 201);
     }
@@ -102,10 +187,13 @@ class WorkApiController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'video_url' => 'nullable|url',
         ]);
 
         $user = $request->user();
-        $work = Work::findOrFail($id);
+        $teamId = $user->current_team_id;
+
+        $work = Work::where('team_id', $teamId)->findOrFail($id);
 
         // Ensure only the owner or judge can edit
         if ($work->user_id !== $user->id && $user->role !== 'judge') {
@@ -119,6 +207,11 @@ class WorkApiController extends Controller
         if ($request->hasFile('file')) {
             $path = $request->file('file')->store('works');
             $work->file_path = $path;
+        }
+
+        // Update video URL if provided
+        if ($request->filled('video_url')) {
+            $work->video_url = $request->video_url;
         }
 
         $work->save();
@@ -135,7 +228,9 @@ class WorkApiController extends Controller
     public function destroy(Request $request, $id)
     {
         $user = $request->user();
-        $work = Work::findOrFail($id);
+        $teamId = $user->current_team_id;
+
+        $work = Work::where('team_id', $teamId)->findOrFail($id);
 
         // Ensure only the owner or judge can delete
         if ($work->user_id !== $user->id && $user->role !== 'judge') {

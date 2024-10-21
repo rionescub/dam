@@ -105,19 +105,19 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        foreach ($teams as $team) {
-            $contestsInTeam = Contest::where('team_id', $team->id)->get();
-            foreach ($contestsInTeam as $contest) {
-                $topWorks = $contest->works()->where('rank', '<=', 3)->get();
-                foreach ($topWorks as $work) {
-                    Diploma::factory()->create([
-                        'user_id' => $work->user_id,
-                        'contest_id' => $work->contest_id,
-                        'work_id' => $work->id,
-                        'team_id' => $team->id,
-                    ]);
-                }
-            }
-        }
+        // foreach ($teams as $team) {
+        //     $contestsInTeam = Contest::where('team_id', $team->id)->get();
+        //     foreach ($contestsInTeam as $contest) {
+        //         $topWorks = $contest->works()->where('rank', '<=', 3)->get();
+        //         foreach ($topWorks as $work) {
+        //             Diploma::factory()->create([
+        //                 'user_id' => $work->user_id,
+        //                 'contest_id' => $work->contest_id,
+        //                 'work_id' => $work->id,
+        //                 'team_id' => $team->id,
+        //             ]);
+        //         }
+        //     }
+        // }
     }
 }

@@ -11,5 +11,8 @@
         "axios": "^1.6.4",
         "laravel-vite-plugin": "^1.0",
         "vite": "^5.0"
+    },
+    "dependencies": {
+        "vuex-persistedstate": "^4.1.0"
     }
 }

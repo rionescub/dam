@@ -15,12 +15,8 @@ class ContestApiController extends Controller
      */
     public function index(Request $request)
     {
-        // Get the authenticated user and their team
-        $user = $request->user();
-        $teamId = $user->current_team_id;
-
-        // Fetch contests that belong to the user's team
-        $contests = Contest::where('team_id', $teamId)->get();
+        // Get the contests for the current team (scope automatically applies)
+        $contests = Contest::all();
 
         return response()->json($contests);
     }
@@ -33,12 +29,8 @@ class ContestApiController extends Controller
      */
     public function show(Request $request, $id)
     {
-        // Get the authenticated user and their team
-        $user = $request->user();
-        $teamId = $user->current_team_id;
-
-        // Fetch the contest by ID that belongs to the user's team
-        $contest = Contest::where('team_id', $teamId)->findOrFail($id);
+        // Find the contest by ID, scope ensures it's for the user's team
+        $contest = Contest::findOrFail($id);
 
         return response()->json($contest);
     }

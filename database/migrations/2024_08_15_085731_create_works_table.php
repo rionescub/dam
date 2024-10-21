@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('works', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('image')->nullable();
+            $table->string('file_path')->nullable();
             $table->string('video_url')->nullable();
             $table->text('description');
             $table->foreignId('contest_id')->constrained()->onDelete('cascade');

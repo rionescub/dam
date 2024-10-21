@@ -17,7 +17,8 @@ class Contest extends Model
         'parent_contest_id',
         'rules',
         'description',
-        'user_id'
+        'user_id',
+        'team_id', // Ensure this is fillable so the correct team can be assigned
     ];
 
     protected function casts(): array
@@ -39,10 +40,12 @@ class Contest extends Model
     {
         return $this->belongsTo(Team::class);
     }
+
     public function parentContest()
     {
         return $this->belongsTo(Contest::class, 'parent_contest_id');
     }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'user_id');

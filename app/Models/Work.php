@@ -12,13 +12,15 @@ class Work extends Model
 
     protected $fillable = [
         'name',
-        'image',
-        'video_url',
         'description',
+        'image', // (Optional) Use if you need a separate image field aside from file
+        'video_url',
+        'file_path', // Added field to store the path of the uploaded artwork
         'contest_id',
         'user_id',
-        'rank'
+        'rank',
     ];
+
     protected static function booted()
     {
         static::addGlobalScope(new CurrentTeam);
@@ -28,7 +30,6 @@ class Work extends Model
     {
         return $this->belongsTo(Team::class);
     }
-
 
     public function contest()
     {
