@@ -119,7 +119,7 @@ class Contest extends Resource
 
             BelongsToMany::make('Sponsors'),
 
-            Select::make('Team')
+            Select::make('Team', 'team_id')
                 ->options(function () {
                     return \App\Models\Team::all()->pluck('name', 'id');
                 })

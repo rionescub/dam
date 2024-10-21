@@ -18,7 +18,36 @@ class Diploma extends Resource
      * @var class-string<\App\Models\Diploma>
      */
     public static $model = \App\Models\Diploma::class;
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        $user = $request->user();
 
+        // If the user is not an admin, filter by the contests they have access to through the Work relationship
+        if (!$user->is_admin()) {
+            $query->whereHas('work.contest', function ($contestQuery) use ($user) {
+                $contestQuery->where('team_id', $user->current_team_id);
+            });
+        }
+
+        return $query;
+    }
+
+    /**
+     * Modify the query used to retrieve a single resource for details.
+     */
+    public static function detailQuery(NovaRequest $request, $query)
+    {
+        $user = $request->user();
+
+        // If the user is not an admin, filter by the contests they have access to through the Work relationship
+        if (!$user->is_admin()) {
+            $query->whereHas('work.contest', function ($contestQuery) use ($user) {
+                $contestQuery->where('team_id', $user->current_team_id);
+            });
+        }
+
+        return $query;
+    }
 
     /**
      * The single value that should be used to represent the resource when being displayed.

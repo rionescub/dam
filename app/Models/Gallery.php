@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Scopes\CurrentTeam;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Gallery extends Model
 {
@@ -20,5 +21,10 @@ class Gallery extends Model
     public function team()
     {
         return $this->belongsTo(Team::class);
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new CurrentTeam);
     }
 }

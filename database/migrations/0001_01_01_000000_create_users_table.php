@@ -17,9 +17,10 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('email')->unique();
             $table->string('role')->default('user');
-            $table->timestamp('date_of_birth')->default('1990-01-01');
             $table->timestamp('email_verified_at')->nullable();
             $table->foreignId('current_team_id')->nullable();
+            $table->string('email_verification_token')->nullable();
+
             $table->string('password');
             $table->rememberToken();
             $table->string('auth_token')->nullable();

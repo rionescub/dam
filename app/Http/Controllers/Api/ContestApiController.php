@@ -34,4 +34,14 @@ class ContestApiController extends Controller
 
         return response()->json($contest);
     }
+
+    public function getContest (Request $request) {
+        $user = $request->user();
+        $teamId = $user->current_team_id;
+        $contest = Contest::where('team_id', $teamId)
+            ->whereDate('end_date', '>', now())
+            ->orderBy('start_date')
+            ->firstOrFail();
+        return response()->json($contest);
+    }
 }

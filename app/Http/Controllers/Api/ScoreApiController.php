@@ -76,9 +76,19 @@ class ScoreApiController extends Controller
 
         $request->validate([
             'work_id' => 'required|exists:works,id',
-            'score' => 'required|numeric|min:0|max:10',
-            'attribute' => 'required|string|in:creativity_score,link_score,aesthetic_score',
         ]);
+
+        $request->validate([
+            'creativity_score' => 'nullable|numeric|min:0|max:10',
+            'link_score' => 'nullable|numeric|min:0|max:10',
+            'aesthetic_score' => 'nullable|numeric|min:0|max:10',
+        ]);
+
+        $data = [
+            'creativity_score' => $request->input('creativity_score', 0),
+            'link_score' => $request->input('link_score', 0),
+            'aesthetic_score' => $request->input('aesthetic_score', 0),
+        ];
 
         $work = Work::findOrFail($request->work_id);
         $contest = $work->contest;
@@ -91,7 +101,7 @@ class ScoreApiController extends Controller
 
         // Create the score or update if it exists
         $score = Score::firstOrNew(['work_id' => $work->id, 'user_id' => $user->id]);
-        $score->{$request->attribute} = $request->score;
+        $score->fill($data);
         $score->save();
 
         return response()->json(['message' => 'Score created/updated successfully', 'score' => $score], 201);
@@ -101,7 +111,6 @@ class ScoreApiController extends Controller
     {
         $user = $request->user();
         $score = Score::where('id', $id)
-            ->where('user_id', $user->id)
             ->firstOrFail();
 
         if (!in_array($user->role, ['judge', 'admin'])) {

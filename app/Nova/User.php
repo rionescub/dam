@@ -67,7 +67,7 @@ class User extends Resource
                 'user' => 'User',
             ])->displayUsingLabels()->sortable()->rules('required'),
 
-            Date::make('Date of Birth')->rules('required'),
+            //  Date::make('Date of Birth')->rules('required'),
 
             Text::make('Email')->sortable()->rules('required', 'email', 'max:254')
                 ->creationRules('unique:users,email')

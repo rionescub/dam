@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -26,11 +27,11 @@ class UserApiController extends Controller
         ]);
 
         if (!Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Invalid login details'], 401);
+            return response()->json(['error' => 'Invalid login details'], 401);
         }
 
         if (Auth::user()->email_verified_at === null) {
-            return response()->json(['message' => 'Please verify your email'], 401);
+            return response()->json(['error' => 'Please verify your email'], 401);
         }
 
         $user = Auth::user();
@@ -121,7 +122,7 @@ class UserApiController extends Controller
             'password' => 'required|string|min:8|same:confirm_password',
             'recaptcha' => 'required|string',
             'confirm_password' => 'required|string|min:8',
-            'team_id' => 'required|exists:teams,id',
+            'team_slug' => 'required|exists:teams,language_code',
         ]);
 
         if ($validator->fails()) {
@@ -141,7 +142,7 @@ class UserApiController extends Controller
                 return response()->json(['error' => 'reCAPTCHA verification failed'], 422);
             }
         }
-
+        $current_team = Team::where('language_code', $request->team_slug)->first();
         // Create user with default role as contestant and email verification token
         $user = User::create([
             'first_name' => $request->input('first_name'),
@@ -149,12 +150,19 @@ class UserApiController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'contestant',
-            'current_team_id' => $request->input('team_id'),
-            'email_verification_token' => Str::random(32),
         ]);
 
+        $user->save();
+
+        // Add the user to the specified team
+        $user->teams()->attach($current_team->id);
+
+        $user->current_team_id = $current_team->id;
+        $user->email_verification_token = Str::random(32);
+        $user->save();
+
         // Generate the verification URL
-        $verificationUrl = url('/verify-email?token=' . $user->email_verification_token);
+        $verificationUrl = url($request->site_url . '/verify-email?token=' . $user->email_verification_token);
 
         // Send the confirmation email
         Mail::to($user->email)->send(new UserConfirmationMail($user, $verificationUrl));

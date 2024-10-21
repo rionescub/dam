@@ -3,6 +3,7 @@
 namespace App\Nova\Actions;
 
 use App\Models\Diploma;
+use App\Models\WorkDetails;
 use Illuminate\Bus\Queueable;
 use Laravel\Nova\Actions\Action;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -35,8 +36,14 @@ class GenerateDiplomaPDF extends Action
     public function handle(ActionFields $fields, Collection $models)
     {
         foreach ($models as $diploma) {
+            $user = $diploma->user;
+            $contest = $diploma->work->contest;
+            $work = $diploma->work;
+
+            $workDetails = WorkDetails::where('work_id', $work->id)->first();
+
             // Load the view and pass the diploma data
-            $pdf = PDF::loadView('pdf.diploma', compact('diploma'))
+            $pdf = PDF::loadView('pdf.diploma', compact('diploma', 'user', 'contest', 'workDetails'))
                 ->setPaper('a4', 'landscape');
 
             // You can store the PDF if needed, for example in public storage
@@ -44,7 +51,7 @@ class GenerateDiplomaPDF extends Action
             Storage::put($fileName, $pdf->output());
 
             // Return a download link
-            return Action::download(Storage::url($fileName), 'diploma_' . $diploma->id . '.pdf');
+            return Action::downloadURL(Storage::url($fileName), 'diploma_' . $diploma->id . '.pdf');
         }
     }
 

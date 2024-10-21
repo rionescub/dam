@@ -28,6 +28,8 @@ Route::middleware('api')->group(function () {
 
     Route::get('/gallery', [GalleryApiController::class, 'index']);
 
+    Route::post('/verify-email', [UserApiController::class, 'verifyEmail']);
+
 
     // User routes
     Route::group(['middleware' => 'auth:sanctum'], function () {
@@ -36,7 +38,6 @@ Route::middleware('api')->group(function () {
         Route::put('/user', [UserApiController::class, 'updateUser']);
         Route::delete('/user', [UserApiController::class, 'deleteUser']);
         Route::get('/user/artworks', [WorkApiController::class, 'getUserArtworks']);
-        Route::get('verify-email/{token}', [UserApiController::class, 'verifyEmail']);
         Route::post('forgot-password', [UserApiController::class, 'sendResetLinkEmail']);
 
 
@@ -48,6 +49,7 @@ Route::middleware('api')->group(function () {
 
         // Contest routes
         Route::get('/contests', [ContestApiController::class, 'index']);
+        Route::get('/get-contest', [ContestApiController::class, 'getContest']);
         Route::get('/contests/{id}', [ContestApiController::class, 'show']);
 
         // Work routes

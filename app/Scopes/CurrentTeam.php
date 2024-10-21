@@ -10,8 +10,11 @@ class CurrentTeam implements Scope
 {
     public function apply(Builder $builder, Model $model)
     {
-        // if (auth()->check()) {
-        //     $builder->where('team_id', auth()->user()->current_team_id);
-        // }
+        $user = auth()->user();
+
+        // Only apply the scope if the user is authenticated and is not an admin
+        if ($user && !$user->is_admin()) {
+            $builder->where('team_id', $user->current_team_id);
+        }
     }
 }

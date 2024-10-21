@@ -88,7 +88,8 @@
             <div class="inner-content">
                 <h1>Diploma</h1>
                 <h3>This Certificate Is Proudly Presented To</h3>
-                <p>{{ $diploma->user->first_name }} {{ $diploma->user->last_name }}</p>
+                <p>{{ $workDetails->full_name }}</p>
+                <p>From {{ $workDetails->school }}, {{ $workDetails->city }}</p>
                 <p>For Placing {{ $diploma->work->rank }}</p>
                 <p>with {{ $diploma->work->name }}</p>
                 <p>in {{ $diploma->contest->name }}</p>

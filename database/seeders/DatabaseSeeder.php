@@ -32,78 +32,139 @@ class DatabaseSeeder extends Seeder
             ]
         ]);
 
-        // Create teams
-        $teams = Team::factory(5)->create();
-        // Assign the first user to the first team
-        $team = $teams->first();
-        $user = User::where('email', 'office@developer-site.ro')->first();
-        $user->teams()->attach($team->id);
-        $user->current_team_id = $team->id;
-        $user->save();
+        DB::table('teams')->insert([
+            [
+                'name' => 'Romania',
+                'language_code' => 'ro',
+            ],
+            [
+                'name' => 'Hungary',
+                'language_code' => 'hu',
+            ],
+            [
+                'name' => 'Slovenia',
+                'language_code' => 'sl',
+            ],
+        ]);
 
-        // Create additional users and assign them to teams
-        $users = User::factory(20)->create();
-        foreach ($users as $user) {
-            // Assign each user to a random team
-            $team = $teams->random();
-            $team->users()->attach($user->id);
-            $user->current_team_id = $team->id;
-            $user->save();
-        }
+        // $teams = Team::all();
+        // foreach ($teams as $team) {
+        //     User::factory()->create([
+        //         'email' => $team->language_code . '-organizer@developer-site.ro',
+        //         'role' => 'organizer',
+        //         'password' => Hash::make('Testing12345#'),
+        //         'current_team_id' => $team->id,
+        //     ]);
+        //     User::factory()->create([
+        //         'email' => $team->language_code . '-judge@developer-site.ro',
+        //         'role' => 'judge',
+        //         'password' => Hash::make('Testing12345#'),
+        //         'current_team_id' => $team->id,
+        //     ]);
+        //     User::factory()->create([
+        //         'email' => $team->language_code . '-contestant@developer-site.ro',
+        //         'role' => 'contestant',
+        //         'password' => Hash::make('Testing12345#'),
+        //         'current_team_id' => $team->id,
+        //     ]);
+        // }
 
-        foreach ($teams as $team) {
-            // For each team, create contests for users belonging to the team
-            $usersInTeam = $team->users;
-            foreach ($usersInTeam as $user) {
-                Contest::factory()->create([
-                    'user_id' => $user->id,
-                    'team_id' => $team->id,
-                ]);
-            }
-        }
+        // Assign each user to the correct team
+        // $users = User::all();
+        // foreach ($users as $user) {
+        //     $user->teams()->attach($user->current_team_id);
+        // }
+        // // Assign the first user to all teams
+        // $teamIds = Team::pluck('id');
+        // $firstUser = User::first();
+        // $firstUser->teams()->attach($teamIds);
 
-        // Create works for each user and ensure that the contest belongs to the same team
-        foreach ($teams as $team) {
-            $usersInTeam = $team->users;
-            foreach ($usersInTeam as $user) {
-                $contestsInTeam = Contest::where('team_id', $team->id)->get();
-                $randomContest = $contestsInTeam->random();
-                Work::factory()->create([
-                    'user_id' => $user->id,
-                    'contest_id' => $randomContest->id,
-                    'team_id' => $team->id, // Ensure the work belongs to the same team
-                ]);
-            }
-        }
+        // // Create contests
+        // $start = Carbon::tomorrow();
+        // $end = Carbon::parse('2024-11-07');
+        // $teams = Team::all();
+        // foreach ($teams as $team) {
+        //     $contest = Contest::factory()->create([
+        //         'name' => 'Contest ' . $team->language_code,
+        //         'team_id' => $team->id,
+        //         'start_date' => $start,
+        //         'end_date' => $end,
+        //     ]);
+        //     Work::factory(3)->create(['contest_id' => $contest->id]);
+        // }
 
-        // Create scores for works ensuring that all entities belong to the same team
-        foreach ($teams as $team) {
-            $worksInTeam = Work::where('team_id', $team->id)->get();
-            foreach ($worksInTeam as $work) {
-                Score::factory()->create([
-                    'user_id' => $work->user_id,
-                    'work_id' => $work->id,
-                    'team_id' => $team->id, // Ensure the score belongs to the same team
-                ]);
-            }
-        }
+        // // Create teams
+        // $teams = Team::factory(5)->create();
+        // // Assign the first user to the first team
+        // $team = $teams->first();
+        // $user = User::where('email', 'office@developer-site.ro')->first();
+        // $user->teams()->attach($team->id);
+        // $user->current_team_id = $team->id;
+        // $user->save();
 
-        // Assign ranks to works based on total score, ensuring they belong to the same team
-        foreach ($teams as $team) {
-            $contestsInTeam = Contest::where('team_id', $team->id)->get();
-            foreach ($contestsInTeam as $contest) {
-                $works = $contest->works()
-                    ->join('scores', 'works.id', '=', 'scores.work_id')
-                    ->orderByDesc('scores.total_score')
-                    ->select('works.*', 'scores.total_score')
-                    ->get();
+        // // Create additional users and assign them to teams
+        // $users = User::factory(20)->create();
+        // foreach ($users as $user) {
+        //     // Assign each user to a random team
+        //     $team = $teams->random();
+        //     $team->users()->attach($user->id);
+        //     $user->current_team_id = $team->id;
+        //     $user->save();
+        // }
 
-                // Assign rank to each work
-                $works->each(function ($work, $index) {
-                    $work->update(['rank' => $index + 1]);
-                });
-            }
-        }
+        // foreach ($teams as $team) {
+        //     // For each team, create contests for users belonging to the team
+        //     $usersInTeam = $team->users;
+        //     foreach ($usersInTeam as $user) {
+        //         Contest::factory()->create([
+        //             'user_id' => $user->id,
+        //             'team_id' => $team->id,
+        //         ]);
+        //     }
+        // }
+
+        // // Create works for each user and ensure that the contest belongs to the same team
+        // foreach ($teams as $team) {
+        //     $usersInTeam = $team->users;
+        //     foreach ($usersInTeam as $user) {
+        //         $contestsInTeam = Contest::where('team_id', $team->id)->get();
+        //         $randomContest = $contestsInTeam->random();
+        //         Work::factory()->create([
+        //             'user_id' => $user->id,
+        //             'contest_id' => $randomContest->id,
+        //             'team_id' => $team->id, // Ensure the work belongs to the same team
+        //         ]);
+        //     }
+        // }
+
+        // // Create scores for works ensuring that all entities belong to the same team
+        // foreach ($teams as $team) {
+        //     $worksInTeam = Work::where('team_id', $team->id)->get();
+        //     foreach ($worksInTeam as $work) {
+        //         Score::factory()->create([
+        //             'user_id' => $work->user_id,
+        //             'work_id' => $work->id,
+        //             'team_id' => $team->id, // Ensure the score belongs to the same team
+        //         ]);
+        //     }
+        // }
+
+        // // Assign ranks to works based on total score, ensuring they belong to the same team
+        // foreach ($teams as $team) {
+        //     $contestsInTeam = Contest::where('team_id', $team->id)->get();
+        //     foreach ($contestsInTeam as $contest) {
+        //         $works = $contest->works()
+        //             ->join('scores', 'works.id', '=', 'scores.work_id')
+        //             ->orderByDesc('scores.total_score')
+        //             ->select('works.*', 'scores.total_score')
+        //             ->get();
+
+        //         // Assign rank to each work
+        //         $works->each(function ($work, $index) {
+        //             $work->update(['rank' => $index + 1]);
+        //         });
+        //     }
+        // }
 
         // foreach ($teams as $team) {
         //     $contestsInTeam = Contest::where('team_id', $team->id)->get();
