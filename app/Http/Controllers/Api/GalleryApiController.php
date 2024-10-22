@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers\Api;
 
-namespace App\Http\Controllers\Api;
-
-use App\Http\Controllers\Controller;
+use App\Models\Team;
 use App\Models\Gallery;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 
 class GalleryApiController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $user = $request->user();
-        $teamId = $user->current_team_id;
+
+        $teamId = Team::where('language_code', $request->locale)->first()->id;
 
         $galleries = Gallery::where('team_id', $teamId)
             ->orderBy('year', 'desc')

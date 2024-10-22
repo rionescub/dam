@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('end_date');
             $table->date('jury_date');
             $table->date('ceremony_date');
-            $table->string('type')->nullable();
+            $table->JSON('type')->nullable();
             $table->string('phase');
             $table->foreignId('parent_contest_id')->nullable()->constrained('contests')->onDelete('cascade');
             $table->foreignId('team_id')->nullable();

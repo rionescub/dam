@@ -2,57 +2,30 @@
 
 namespace App\Nova;
 
-use App\Nova\Resource;
-use Laravel\Nova\Nova;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\Textarea;
-use App\Nova\Metrics\ContestUsers;
-use App\Nova\Metrics\ContestWorks;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\MultiSelect;
-use App\Nova\Metrics\RunningContests;
-use Laravel\Nova\Actions\ExportAsCsv;
-use App\Nova\Metrics\UpcomingContests;
 use Laravel\Nova\Fields\BelongsToMany;
+use Laravel\Nova\Http\Requests\NovaRequest;
+use App\Nova\Metrics\ContestUsers;
+use App\Nova\Metrics\ContestWorks;
+use App\Nova\Metrics\RunningContests;
+use App\Nova\Metrics\UpcomingContests;
 use App\Nova\Filters\ContestTypeFilter;
 use App\Nova\Metrics\FinishingContests;
-use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Actions\ExportAsCsv;
 
 class Contest extends Resource
 {
-    /**
-     * The model the resource corresponds to.
-     *
-     * @var class-string<\App\Models\Contest>
-     */
     public static $model = \App\Models\Contest::class;
-
-    /**
-     * The single value that should be used to represent the resource when being displayed.
-     *
-     * @var string
-     */
     public static $title = 'name';
+    public static $search = ['id', 'name'];
 
-    /**
-     * The columns that should be searched.
-     *
-     * @var array
-     */
-    public static $search = [
-        'id',
-        'name'
-    ];
-
-    /**
-     * Get the fields displayed by the resource.
-     *
-     * @return array
-     */
     public function fields(NovaRequest $request)
     {
         return [
@@ -74,13 +47,12 @@ class Contest extends Resource
             Date::make('Ceremony Date')
                 ->rules('required', 'after:start_date'),
 
-            MultiSelect::make('Type')
-                ->options([
-                    'video' => 'Video',
-                    'photo' => 'Photo',
-                    'craft' => 'Craft',
-                ])
-                ->rules('required'),
+            // MultiSelect::make('Type')
+            //     ->options([
+            //         'video' => 'Video',
+            //         'photo' => 'Photo',
+            //         'craft' => 'Craft',
+            //     ]),
 
             Select::make('Phase')
                 ->options([
@@ -101,10 +73,8 @@ class Contest extends Resource
 
             BelongsTo::make('User', 'creator', User::class)
                 ->rules('required')
-                ->default(Nova::user()->id)
-                ->hideFromIndex()
-                ->hideWhenCreating()
-                ->hideWhenUpdating(),
+                ->withMeta(['value' => auth()->id()]) // Setting default value to current user ID
+                ->hideFromIndex(),
 
             HasMany::make('Users')
                 ->hideFromIndex(),
@@ -129,12 +99,6 @@ class Contest extends Resource
         ];
     }
 
-    /**
-     * Get the filters available for the resource.
-     *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @return array
-     */
     public function filters(NovaRequest $request)
     {
         return [
@@ -142,12 +106,6 @@ class Contest extends Resource
         ];
     }
 
-    /**
-     * Get the lenses available for the resource.
-     *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @return array
-     */
     public function lenses(NovaRequest $request)
     {
         return [];
@@ -164,12 +122,6 @@ class Contest extends Resource
         ];
     }
 
-    /**
-     * Get the actions available for the resource.
-     *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @return array
-     */
     public function actions(NovaRequest $request)
     {
         return [
@@ -189,7 +141,6 @@ class Contest extends Resource
                     ];
                 }
             ),
-
         ];
     }
 }
