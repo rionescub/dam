@@ -81,15 +81,19 @@ class Work extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make('Name')
+            Text::make('Title', 'name')
+                ->sortable()
+                ->rules('required', 'max:255'),
+
+            Text::make ('English Title', 'title_en')
                 ->sortable()
                 ->rules('required', 'max:255'),
 
             Textarea::make('Description')
                 ->rules('required'),
 
-            Image::make('Image')
-                ->nullable(),
+            Textarea::make('English Description', 'description_en')
+                ->rules('required'),
 
             Text::make('Video URL')
                 ->nullable(),

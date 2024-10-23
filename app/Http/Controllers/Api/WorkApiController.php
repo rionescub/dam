@@ -104,6 +104,8 @@ class WorkApiController extends Controller
         // Validate request data
         $request->validate([
             'title' => 'required|string|max:255',
+            'title_en' => 'required|string|max:255',
+            'description_en' => 'required|string',
             'description' => 'nullable|string',
             'contest_id' => 'required|exists:contests,id',
             'file' => 'file|mimes:jpg,jpeg,png,pdf|max:2048',
@@ -115,7 +117,7 @@ class WorkApiController extends Controller
             'country' => 'nullable|string|max:255',
             'county' => 'nullable|string|max:255',
             'school' => 'nullable|string|max:255',
-            'year' => 'required|string|max:4',
+            'year' => 'required|string|max:20',
             'mentor' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
         ]);
@@ -132,7 +134,9 @@ class WorkApiController extends Controller
         // Save work details in the Work model
         $work = new Work();
         $work->name = $request->title;
+        $work->title_en = $request->title_en;
         $work->description = $request->description;
+        $work->description_en = $request->description_en;
         $work->contest_id = $request->contest_id;
         $work->user_id = $user->id;
 

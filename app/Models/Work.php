@@ -12,6 +12,8 @@ class Work extends Model
 
     protected $fillable = [
         'name',
+        'title_en',
+        'description_en',
         'description',
         'image', // (Optional) Use if you need a separate image field aside from file
         'video_url',
