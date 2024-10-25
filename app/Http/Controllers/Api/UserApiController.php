@@ -133,7 +133,7 @@ class UserApiController extends Controller
         if (env('APP_ENV') !== 'local') {
             $recaptchaResponse = $request->input('recaptcha');
             $recaptchaSecret = env('RECAPTCHA_SECRET_KEY');
-            $response = Http::post('https://www.google.com/recaptcha/api/siteverify', [
+            $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
                 'secret' => $recaptchaSecret,
                 'response' => $recaptchaResponse,
             ]);
