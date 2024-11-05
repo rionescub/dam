@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use Illuminate\Support\Facades\Schedule;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -13,6 +14,16 @@ class Kernel extends HttpKernel
      *
      * @var array
      */
+
+    protected function schedule(Schedule $schedule)
+    {
+        $schedule->command('contest:update-results')->daily();
+    }
+
+    protected $commands = [
+        \App\Console\Commands\UpdateContestResults::class,
+    ];
+
     protected $middleware = [
         // Default global middleware for Laravel
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,

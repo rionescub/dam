@@ -18,8 +18,8 @@ class SponsorsApiController extends Controller
     public function index(Request $request)
     {
         // Fetch only the relevant fields: name, logo, url
-        $locale = $request->server('HTTP_LOCALE') ?: 'en';
-        $team = Team::where('language_code', $locale)->first();
+        //$locale = $request->server('HTTPS_LOCALE') ?: 'ro';
+        $team = Team::where('language_code', 'ro')->first();
         $contest = Contest::where('team_id', $team->id)->firstOrFail();
         $sponsors = Contest::find($contest->id)->sponsors()->select('sponsors.id', 'name', 'image', 'url')->get();
 

@@ -15,9 +15,9 @@ class Work extends Model
         'title_en',
         'description_en',
         'description',
-        'image', // (Optional) Use if you need a separate image field aside from file
+        'image',
         'video_url',
-        'file_path', // Added field to store the path of the uploaded artwork
+        'file_path',
         'contest_id',
         'user_id',
         'rank',

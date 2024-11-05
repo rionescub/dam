@@ -31,12 +31,14 @@ class WorkApiController extends Controller
         } elseif ($user->role === 'judge') {
             // Judges can view works for contests they are judging within their team
             $contests = Contest::where('team_id', $user->current_team_id)
-            ->where('end_date', '<', Carbon::now())
-            ->where('jury_date', '>', Carbon::now())
-            ->first();
+                ->where('end_date', '<=', Carbon::now())
+                ->where('jury_date', '>=', Carbon::now())
+                ->first();
             $works = Work::where('contest_id', $contests->id)
                 ->with('details')
-                ->with('scores')
+                ->with(['scores' => function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                }])
                 ->paginate($perPage);
         } else {
             // Other users can only view their own works within their team
@@ -56,7 +58,6 @@ class WorkApiController extends Controller
     public function getUserArtworks(Request $request)
     {
         $user = $request->user();
-        $teamId = $user->current_team_id;
 
         $artworks = Work::where('user_id', $user->id)
             ->with('details')
@@ -76,11 +77,10 @@ class WorkApiController extends Controller
         $user = $request->user();
 
         $work = Work::with('details')
-
             ->findOrFail($id);
 
         if ($user->role === 'judge') {
-            $contests = Contest::where('team_id', $teamId)
+            $contests = Contest::where('team_id', $user->current_team_id)
                 ->pluck('id');
 
             if (!in_array($work->contest_id, $contests->toArray())) {
@@ -101,6 +101,7 @@ class WorkApiController extends Controller
      */
     public function store(Request $request)
     {
+
         // Validate request data
         $request->validate([
             'title' => 'required|string|max:255',
@@ -108,7 +109,7 @@ class WorkApiController extends Controller
             'description_en' => 'required|string',
             'description' => 'nullable|string',
             'contest_id' => 'required|exists:contests,id',
-            'file' => 'file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'file' => $request->hasFile('file') ? 'file|mimes:jpg,jpeg,png,pdf|max:2048' : 'nullable',
             'video_url' => 'nullable|url',
             'age_group' => 'required|string|max:20',
             'full_name' => 'required|string|max:255',
@@ -141,16 +142,11 @@ class WorkApiController extends Controller
         $work->user_id = $user->id;
 
         // Handle file upload
-        if ($request->hasFile('file')) {
-            $path = 'works/' . $request->contest_id;
-            if (!file_exists($path)) {
-                mkdir($path, 0755, true);
-            }
-            $path = $request->file('file')->store($path);
-            $work->file_path = $path;
+        if ($request->hasFile('file') && $request->file('file')->isValid()) {
+            $path = 'public/works/' . $request->contest_id;
+            $filePath = $request->file('file')->store($path);
+            $work->file_path = str_replace('public/', '', $filePath);
         }
-
-            $work->file_path = Storage::putFile($path, $request->file('file'));
 
         // Save the video URL if provided
         if ($request->filled('video_url')) {
@@ -175,7 +171,7 @@ class WorkApiController extends Controller
 
         $workDetails->save();
 
-        return response()->json(['message' => 'Artwork submited successfully', 'work' => $work], 201);
+        return response()->json(['message' => 'Artwork submitted successfully', 'work' => $work], 201);
     }
 
     /**
@@ -208,8 +204,9 @@ class WorkApiController extends Controller
 
         // Handle file upload if a new file is uploaded
         if ($request->hasFile('file')) {
-            $path = $request->file('file')->store('works');
-            $work->file_path = $path;
+            $path = 'public/works/' . $work->contest_id;
+            $filePath = $request->file('file')->store($path);
+            $work->file_path = str_replace('public/', '', $filePath);
         }
 
         // Update video URL if provided

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Carbon\Carbon;
 use App\Models\Work;
 use App\Models\Score;
+use App\Models\Contest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +26,7 @@ class ScoreApiController extends Controller
             // Fetch scores related to contests assigned to the judge within their team
             $contests = $user->contests()->where('team_id', $teamId)->pluck('id');
             $works = Work::whereIn('contest_id', $contests)->where('team_id', $teamId)->pluck('id');
-            $scores = Score::whereIn('work_id', $works)->get();
+            $scores = Score::whereIn('work_id', $works)->where('user_id', $user->id)->get();
         } else {
             // Fetch only scores for the user's own works within their team
             $works = Work::where('user_id', $user->id)->where('team_id', $teamId)->pluck('id');
@@ -45,19 +46,20 @@ class ScoreApiController extends Controller
     {
         $user = $request->user();
         $teamId = $user->current_team_id;
+        $work = Work::whereHas('contest', function ($query) use ($teamId) {
+            $query->where('team_id', $teamId);
+        })->findOrFail($id);
 
-        $score = Score::where('id', $id)
-            ->whereHas('work', function ($query) use ($teamId) {
-                $query->where('team_id', $teamId);
-            })
-            ->firstOrFail();
+        $scores = Score::where('work_id', $work->id)
+            ->where('user_id', $user->id)
+            ->get();
 
         // Additional validation for judges or users accessing their scores
-        if ($user->role !== 'admin' && $score->work->user_id !== $user->id) {
+        if ($user->role !== 'admin' && $scores->pluck('user_id')->doesntContain($user->id)) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return response()->json($score);
+        return response()->json($scores);
     }
 
     /**
@@ -84,12 +86,19 @@ class ScoreApiController extends Controller
             'aesthetic_score' => 'nullable|numeric|min:0|max:10',
         ]);
 
+
         $data = [
-            'creativity_score' => $request->input('creativity_score', 0),
-            'link_score' => $request->input('link_score', 0),
-            'aesthetic_score' => $request->input('aesthetic_score', 0),
+            'creativity_score' => 1,
+            'link_score' => 1,
+            'aesthetic_score' => 1,
         ];
 
+        $attribute = $request->input('attribute');
+        $score = $request->input('score');
+
+        if (in_array($attribute, array_keys($data))) {
+            $data[$attribute] = $score;
+        }
         $work = Work::findOrFail($request->work_id);
         $contest = $work->contest;
 
@@ -110,11 +119,27 @@ class ScoreApiController extends Controller
     public function update(Request $request, $id)
     {
         $user = $request->user();
+
+        $work = Work::where('id', $request->work_id)->firstOrFail();
+        $contest = Contest::where('id', $work->contest_id)->where('team_id', $user->current_team_id)->firstOrFail();
+
+        if ($user->current_team_id !== $contest->team_id) {
+            return response()->json(['message' => 'User not allowed to rate works in contest'], 403);
+        }
+
         $score = Score::where('id', $id)
             ->firstOrFail();
 
         if (!in_array($user->role, ['judge', 'admin'])) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Role not permitted to rate'], 403);
+        }
+
+        if ($score->user_id !== $user->id) {
+            return response()->json(['message' => 'Score does not belong to user'], 403);
+        }
+
+        if ($score->work_id !== $work->id) {
+            return response()->json(['message' => 'Score does not belong to work'], 403);
         }
 
         $request->validate([
@@ -127,7 +152,7 @@ class ScoreApiController extends Controller
 
         // Check if the current date is within the judging period
         $currentDate = Carbon::now();
-        if ($currentDate->lt($contest->end_date) || $currentDate->gt($contest->jury_date)) {
+        if ($currentDate->lt($contest->start_date) || $currentDate->gt($contest->end_date - 1)) {
             return response()->json(['message' => 'Judging is only allowed between the contest end date and jury date.'], 403);
         }
 
@@ -150,12 +175,20 @@ class ScoreApiController extends Controller
     {
         $user = $request->user();
         $teamId = $user->current_team_id;
+        $work = Work::whereHas('contest', function ($query) use ($teamId) {
+            $query->where('team_id', $teamId);
+        })->findOrFail($id);
 
-        // Find the score and ensure it belongs to the user's team
+        $contest = $work->contest;
+
+        if ($contest->end_date >= now()) {
+            return response()->json(['message' => 'Cannot finalize score before contest end date'], 403);
+        }
+
+
         $score = Score::where('id', $id)
-            ->whereHas('work', function ($query) use ($teamId) {
-                $query->where('team_id', $teamId);
-            })
+            ->where('work_id', $work->id)
+            ->where('user_id', $user->id)
             ->firstOrFail();
 
         // Check if the user has the proper role to finalize a score

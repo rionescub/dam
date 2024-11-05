@@ -81,7 +81,11 @@ class User extends Resource
                 ->updateRules('nullable', Rules\Password::defaults()),
 
 
-            DateTime::make('Email Verified At', 'email_verified_at')->hidden()->rules('required')->default(now()),
+            DateTime::make('Email Verified At', 'email_verified_at')
+                ->onlyOnDetail()
+                ->hideFromDetail()
+                ->rules('required')
+                ->default(now()),
         ];
     }
 
