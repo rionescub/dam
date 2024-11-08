@@ -44,7 +44,11 @@ class GenerateDiplomaPDF extends Action
 
             // Load the view and pass the diploma data
             $pdf = PDF::loadView('pdf.diploma', compact('diploma', 'user', 'contest', 'workDetails'))
-                ->setPaper('a4', 'landscape');
+                ->setPaper('a4', 'landscape')
+                ->setOption('defaultFont', 'DejaVu Sans')
+                ->setOption('isFontSubsettingEnabled', true)
+                ->setOption('isRemoteEnabled', true);
+
 
             // You can store the PDF if needed, for example in public storage
             $fileName = 'diplomas/diploma_' . $diploma->id . '.pdf';

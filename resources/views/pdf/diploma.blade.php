@@ -1,100 +1,227 @@
-<style>
-    @page {
-        size: A4 landscape;
-        margin: 10mm;
-    }
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    body {
-        margin: 0;
-        padding: 0;
-        border: 1mm solid #991B1B;
-        height: 188mm;
-    }
+<!doctype html>
+<html lang="ro">
 
-    .border-pattern {
-        position: absolute;
-        left: 4mm;
-        top: -6mm;
-        height: 200mm;
-        width: 267mm;
-        border: 1mm solid #991B1B;
-        /* http://www.heropatterns.com/ */
-        background-color: #d6d6e4;
-        background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h16v2h-6v6h6v8H8v-6H2v6H0V0zm4 4h2v2H4V4zm8 8h2v2h-2v-2zm-8 0h2v2H4v-2zm8-8h2v2h-2V4z' fill='%23991B1B' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E");
-    }
+<head>
+    <meta charset="utf-8">
+    <title>Diplomă {{ $diploma->contest->name }}</title>
+    <style>
+        html {
+            padding: 0px;
+            margin: 0px;
+        }
 
-    .content {
-        position: absolute;
-        left: 10mm;
-        top: 10mm;
-        height: 178mm;
-        width: 245mm;
-        border: 1mm solid #991B1B;
-        background: white;
-    }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            height: 100vh;
+            width: 100%;
+            padding: 0px;
+            font-family: 'DejaVu Sans', sans-serif;
+            background-color: transparent;
+        }
 
-    .inner-content {
-        border: 1mm solid #1b2899;
-        margin: 4mm;
-        padding: 10mm;
-        height: 148mm;
-        text-align: center;
-    }
+        .diploma-container {
+            width: 100vw;
+            heigh: calc(100vh);
+            background: transparent;
+            position: relative;
+            display: block;
+            padding: 0px;
+            border-radius: 8px;
+            overflow: inherit;
+        }
 
-    h1 {
-        text-transform: uppercase;
-        font-size: 48pt;
-        margin-bottom: 0;
-    }
+        .diploma-left {
+            width: 197px;
+            height: 100%;
+            float: left;
+            background-color: #fff;
+            border-right: 3px solid #1d4ed8;
+            margin-left: 3px;
+        }
 
-    h2 {
-        font-size: 24pt;
-        margin-top: 0;
-        padding-bottom: 1mm;
-        display: inline-block;
-        border-bottom: 1mm solid #1b2899;
-    }
+        .diploma-right {
+            width: calc(100% - 200px);
+            height: 100%;
+            float: left;
+            background-image: url('{{ url('waves.png') }}');
+            background-size: contain;
+            background-position: bottom center;
+            background-repeat: no-repeat;
+            background-color: #c2d2ff;
+            border-left: 3px solid #1d4ed8;
+        }
 
-    h2::after {
-        content: "";
-        display: block;
-        padding-bottom: 4mm;
-        border-bottom: 1mm solid #1b2899;
-    }
 
-    h3 {
-        font-size: 20pt;
-        margin-bottom: 0;
-        margin-top: 10mm;
-    }
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-    p {
-        font-size: 16pt;
-    }
+        .boat {
+            position: absolute;
+            bottom: 150px;
+            left: 150px;
+            width: 200px;
+        }
 
-    .badge {
-        width: 40mm;
-        height: 40mm;
-        position: absolute;
-        right: 10mm;
-        bottom: 10mm;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z' /%3E%3C/svg%3E");
-    }
-</style>
+        .boat img {
+            height: 100px;
+            float: left;
+        }
+
+        .logo {
+            display: block;
+            max-width: 250px;
+            text-align: center
+        }
+
+        .logo img {
+            height: auto;
+            width: 150px;
+            margin: 40px auto;
+            diplay: block;
+        }
+
+        .title {
+            text-align: center;
+            color: #1d4ed8;
+            font-size: 48px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            margin-top: 50px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #1e3a8a;
+            margin-bottom: 30px;
+            margin-top: 30px;
+        }
+
+        .recipient-name {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #1d4ed8;
+            text-transform: uppercase;
+            margin: 30px 0;
+        }
+
+        .details {
+            text-align: center;
+            font-size: 14px;
+            color: #1e3a8a;
+            margin: 0px 40px;
+            line-height: 1.6;
+        }
+
+        .details strong {
+            font-weight: bold;
+        }
+
+        .signature-section {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .signature {
+            font-size: 18px;
+            font-style: italic;
+            color: #1d4ed8;
+            margin-top: 10px;
+        }
+
+        .signature-section img {
+            margin: 0 auto;
+            width: 100px;
+            display: block;
+        }
+
+        .position {
+            font-size: 16px;
+            color: #1e3a8a;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 50px;
+            right: 50px;
+            min-width: 400px;
+            font-size: 12px;
+            color: #1e3a8a;
+        }
+    </style>
+</head>
 
 <body>
-    <div class="border-pattern">
-        <div class="content">
-            <div class="inner-content">
-                <h1>Diploma</h1>
-                <h3>This Certificate Is Proudly Presented To</h3>
-                <p>{{ $workDetails->full_name }}</p>
-                <p>From {{ $workDetails->school }}, {{ $workDetails->city }}</p>
-                <p>For Placing {{ $diploma->work->rank }}</p>
-                <p>with {{ $diploma->work->name }}</p>
-                <p>in {{ $diploma->contest->name }}</p>
-                <p>On {{ $diploma->created_at->format('M d, Y') }}</p>
+    <div class="background"></div>
+    <div class="diploma-container">
+        <div class="diploma-left">
+            <div class="logo">
+                <img src="{{ asset('dam_logo.png') }}" class="mx-auto" alt="DAM ">
+                <img src="{{ asset('ipcdr.png') }}" class="mx-auto" alt="ICPDR IKSD">
+                <img src="{{ asset('erste.svg') }}" class="mx-auto" alt="Erste">
+                <img src="{{ asset('mmap.png') }}" class="mx-auto" alt="Ministerul Apelor">
+                <img src="{{ asset('gwp.jpg') }}" class="mx-auto" alt="GWP ROmania">
+            </div>
+        </div>
+
+        <!-- Right Section -->
+
+        <div class="diploma-right">
+            <div class="title">
+                @if (in_array($diploma->work->rank, [1, 2, 3]))
+                    Diplomă <br> Premiul <span ">{{ $diploma->work->rank }}</span>
+@else
+Diplomă de <br> mențiune
+ @endif
+            </div>
+
+            <div class="subtitle">
+                <span class="">Se acordă elevului/elevei</span><br />
+                <span class="">{{ $workDetails->full_name }}</span>
+            </div>
+
+            <div class="details">
+                de la <strong>Școala</strong> <span class="font-bold underline">{{ $workDetails->school }}</span>
+                <br />coordonat/ă de prof. <span class="font-bold">{{ $workDetails->mentor }}</span>
+                <br />pentru participarea la concursul "{{ $diploma->contest->name }}" - faza națională.</span>
+                <br /><br /><br /><span class="font-bold text-blue-900 text-2xl italic mt-10">Asociația Parteneriatul
+                    Global al Apei
+                    din
+                    România </span>
+            </div>
+
+            <!-- Signature Section -->
+            <div class="signature-section">
+                <img src="{{ asset('signature.png') }}" class="mx-auto" alt="Signature">
+                <div class="signature">Procop Ionuț</div>
+                <div class="position">Președinte</div>
+            </div>
+
+            <div class="boat">
+                <img src="{{ asset('boat.png') }}" alt="Boat">
+            </div>
+
+            <!-- Participant Info Bottom Right -->
+            <div class="footer">
+                <div>
+                    <span class="font-medium">Nume Lucrare</span>
+                    <br />
+                    <span class="underline">{{ $diploma->work->name }}</span>
+
+                </div>
             </div>
         </div>
     </div>
+
 </body>
+
+</html>

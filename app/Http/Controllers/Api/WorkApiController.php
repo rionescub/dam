@@ -230,14 +230,14 @@ class WorkApiController extends Controller
         $user = $request->user();
         $teamId = $user->current_team_id;
 
+        // Use `withTrashed` to find the work even if it was soft deleted previously
         $work = Work::where('team_id', $teamId)->findOrFail($id);
 
-        // Ensure only the owner or judge can delete
         if ($work->user_id !== $user->id && $user->role !== 'judge') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $work->delete();
+        $work->delete(); // Soft delete
 
         return response()->json(['message' => 'Work deleted successfully']);
     }
