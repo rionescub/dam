@@ -104,7 +104,7 @@ class ScoreApiController extends Controller
 
         // Check if the current date is within the judging period
         $currentDate = Carbon::now();
-        if ($currentDate->lt($contest->end_date) || $currentDate->gt($contest->jury_date)) {
+        if ($currentDate->lt(Carbon::parse($contest->end_date)) || $currentDate->gt(Carbon::parse($contest->jury_date)->addDay())) {
             return response()->json(['message' => 'Judging is only allowed between the contest end date and jury date.'], 403);
         }
 
@@ -152,8 +152,8 @@ class ScoreApiController extends Controller
 
         // Check if the current date is within the judging period
         $currentDate = Carbon::now();
-        if ($currentDate->lt($contest->start_date) || $currentDate->gt($contest->end_date - 1)) {
-            return response()->json(['message' => 'Judging is only allowed between the contest end date and jury date.'], 403);
+        if ($currentDate->lt(Carbon::parse($contest->end_date)) || $currentDate->gt(Carbon::parse($contest->jury_date)->addDay())) {
+            return response()->json(['message' => 'Judging is only allowed between the contest start date and end date inclusive.'], 403);
         }
 
         // Update the specific attribute of the score

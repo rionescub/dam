@@ -22,7 +22,7 @@ class WorkApiController extends Controller
     {
         $user = $request->user();
         // Define the per page count, defaulting to 8 if not provided.
-        $perPage = $request->get('per_page', 50);
+        $perPage = $request->get('per_page', 100);
 
         if ($user->role === 'admin') {
             // Admins can view all works for their team
@@ -32,7 +32,7 @@ class WorkApiController extends Controller
             // Judges can view works for contests they are judging within their team
             $contests = Contest::where('team_id', $user->current_team_id)
                 ->where('end_date', '<=', Carbon::now())
-                ->where('jury_date', '>=', Carbon::now())
+                ->where('jury_date', '<=', Carbon::now())
                 ->first();
             $works = Work::where('contest_id', $contests->id)
                 ->with('details')
@@ -46,7 +46,6 @@ class WorkApiController extends Controller
                 ->with('details')
                 ->paginate($perPage);
         }
-
         return response()->json($works);
     }
 

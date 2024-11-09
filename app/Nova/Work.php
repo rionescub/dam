@@ -85,7 +85,7 @@ class Work extends Resource
                 ->sortable()
                 ->rules('required', 'max:255'),
 
-            Text::make ('English Title', 'title_en')
+            Text::make('English Title', 'title_en')
                 ->sortable()
                 ->rules('required', 'max:255'),
 
@@ -110,9 +110,9 @@ class Work extends Resource
             Number::make('Total Score')
                 ->readonly(),
 
-            Boolean::make('Is Finalized')
-                ->readonly() // Prevents this field from being edited manually in Nova
-                ->sortable(),
+            // Boolean::make('Is Finalized')
+            //     ->readonly() // Prevents this field from being edited manually in Nova
+            //     ->sortable(),
 
             BelongsTo::make('Contest')
                 ->rules('required'),
@@ -170,19 +170,26 @@ class Work extends Resource
                 function ($model) {
                     return [
                         'id' => $model->getKey(),
-                        'name' => $model->name,
-                        'file_path' => $model->file_path, // Added file_path to CSV export
-                        'description' => $model->description,
-                        'rank' => $model->rank,
-                        'total_score' => $model->total_score,
-                        'contest_name' => $model->contest->name,
-                        'user_name' => $model->user->name,
-                        'work_details_full_name' => $model->details->full_name,
-                        'work_details_date_of_birth' => $model->details->date_of_birth,
-                        'work_details_phone' => $model->details->phone,
-                        'work_details_mentor' => $model->details->mentor,
-                        'work_details_school' => $model->details->school,
-                        'work_details_school_director' => $model->details->school_director,
+                        'title' => $model->name ?? '',
+                        'name' => $model->details?->full_name ?? $model->user?->name ?? '',
+                        'file_path' => $model->file_path ? asset("storage/" . $model->file_path) : ($model->video_url ?? ''),
+                        'description' => $model->description ?? '',
+                        'rank' => $model->rank ?? '',
+                        'total_score' => $model->total_score ?? '',
+                        'contest_name' => $model->contest?->name ?? '',
+                        'user_name' => $model->user?->name ?? '',
+                        'type' => $model->details?->type ?? '',
+                        'age_group' => $model->details?->age_group ?? '',
+                        'year' => $model->details?->year ?? '',
+                        'country' => $model->details?->country ?? '',
+                        'county' => $model->details?->county ?? '',
+                        'city' => $model->details?->city ?? '',
+                        'work_details_contact' => implode("\n", array_filter([
+                            'Teacher name: ' . ($model->details?->mentor ?? '') . "\n",
+                            'Email: ' . ($model->user->email ?? '') . "\n",
+                            'Phone: ' . ($model->details?->phone ?? '') . "\n",
+                            'School: ' . ($model->details?->school ?? '') . "\n",
+                        ])),
                     ];
                 }
             ),
