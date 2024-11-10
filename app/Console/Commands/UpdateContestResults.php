@@ -23,7 +23,10 @@ class UpdateContestResults extends Command
     public function handle()
     {
         // Get all contests with their works, scores, and details
-        $contests = Contest::with(['works.scores', 'works.details'])->get();
+        $contests = Contest::with(['works.scores', 'works.details'])
+            ->where('jury_date', '<', Carbon::now())
+            ->where('ceremony_date', '>=', Carbon::now())
+            ->get();
 
         foreach ($contests as $contest) {
             // Get all works related to the contest
@@ -32,7 +35,8 @@ class UpdateContestResults extends Command
             // Calculate total scores for each work
             foreach ($works as $work) {
                 // Sum total scores for each work, defaulting to 3 if no scores are found
-                $totalScore = $work->scores->sum('total_score') ?: 3;
+                $totalScore = $work->scores()->sum('total_score') ?: 3;
+
 
                 // Update work total score
                 $work->total_score = $totalScore;

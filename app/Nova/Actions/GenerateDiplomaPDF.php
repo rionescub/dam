@@ -39,11 +39,10 @@ class GenerateDiplomaPDF extends Action
             $user = $diploma->user;
             $contest = $diploma->work->contest;
             $work = $diploma->work;
-
-            $workDetails = WorkDetails::where('work_id', $work->id)->first();
+            $details = $diploma->work->details;
 
             // Load the view and pass the diploma data
-            $pdf = PDF::loadView('pdf.diploma', compact('diploma', 'user', 'contest', 'workDetails'))
+            $pdf = PDF::loadView('pdf.diploma', compact('diploma'))
                 ->setPaper('a4', 'landscape')
                 ->setOption('defaultFont', 'DejaVu Sans')
                 ->setOption('isFontSubsettingEnabled', true)

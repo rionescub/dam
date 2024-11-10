@@ -26,11 +26,6 @@ class WorkDetails extends Model
         'type', // Type of artwork
     ];
 
-    protected static function booted()
-    {
-        static::addGlobalScope(new CurrentTeam);
-    }
-
     public function work()
     {
         return $this->belongsTo(Work::class);

@@ -201,7 +201,6 @@ class WorkApiController extends Controller
         $work->title = $request->title;
         $work->description = $request->description;
 
-        // Handle file upload if a new file is uploaded
         if ($request->hasFile('file')) {
             $path = 'public/works/' . $work->contest_id;
             $filePath = $request->file('file')->store($path);
@@ -229,7 +228,6 @@ class WorkApiController extends Controller
         $user = $request->user();
         $teamId = $user->current_team_id;
 
-        // Use `withTrashed` to find the work even if it was soft deleted previously
         $work = Work::where('team_id', $teamId)->findOrFail($id);
 
         if ($work->user_id !== $user->id && $user->role !== 'judge') {

@@ -18,15 +18,6 @@ class Diploma extends Model
         'description'
     ];
 
-    protected static function booted()
-    {
-        static::addGlobalScope(new CurrentTeam);
-    }
-
-    public function team()
-    {
-        return $this->belongsTo(Team::class);
-    }
 
     public function user()
     {

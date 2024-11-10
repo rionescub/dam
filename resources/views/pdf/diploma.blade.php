@@ -186,12 +186,13 @@ Diplomă de <br> mențiune
 
             <div class="subtitle">
                 <span class="">Se acordă elevului/elevei</span><br />
-                <span class="">{{ $workDetails->full_name }}</span>
+                <span class="">{{ $diploma->work->details->full_name }}</span>
             </div>
 
             <div class="details">
-                de la <strong>Școala</strong> <span class="font-bold underline">{{ $workDetails->school }}</span>
-                <br />coordonat/ă de prof. <span class="font-bold">{{ $workDetails->mentor }}</span>
+                de la <strong>Școala</strong> <span
+                    class="font-bold underline">{{ $diploma->work->details->school }}</span>
+                <br />coordonat/ă de prof. <span class="font-bold">{{ $diploma->work->details->mentor }}</span>
                 <br />pentru participarea la concursul "{{ $diploma->contest->name }}" - faza națională.</span>
                 <br /><br /><br /><span class="font-bold text-blue-900 text-2xl italic mt-10">Asociația Parteneriatul
                     Global al Apei
