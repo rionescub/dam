@@ -107,12 +107,18 @@ class Work extends Resource
                 ->readonly()
                 ->rules('required', 'integer', 'min:1'),
 
+            Number::make('Award Rank')
+                ->min(1)
+                ->nullable(),
+
+
             Number::make('Total Score')
                 ->readonly(),
 
             // Boolean::make('Is Finalized')
             //     ->readonly() // Prevents this field from being edited manually in Nova
             //     ->sortable(),
+            Boolean::make('View on Front'),
 
             BelongsTo::make('Contest')
                 ->rules('required'),

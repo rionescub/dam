@@ -30,6 +30,7 @@ Route::middleware('api')->group(function () {
 
     Route::post('/verify-email', [UserApiController::class, 'verifyEmail']);
 
+    Route::get('/works-front', [WorkApiController::class, 'getFrontWorks']);
 
     // User routes
     Route::group(['middleware' => 'auth:sanctum'], function () {

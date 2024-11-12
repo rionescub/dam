@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use Carbon\Carbon;
+use App\Models\Team;
 use App\Models\Work;
 use App\Models\Contest;
 use App\Models\WorkDetails;
@@ -46,6 +47,27 @@ class WorkApiController extends Controller
                 ->with('details')
                 ->paginate($perPage);
         }
+        return response()->json($works);
+    }
+
+
+    public function getFrontWorks(Request $request)
+    {
+        $team = Team::where('language_code', $request->locale)->first();
+
+        if (!$team) {
+            return response()->json(['error' => 'Team not found'], 404);
+        }
+
+        // Get all contest IDs for the specified team
+        $contestIds = Contest::where('team_id', $team->id)->pluck('id');
+
+        // Fetch works that match any of the contest IDs and are set to show on front
+        $works = Work::with('details')
+            ->whereIn('contest_id', $contestIds)
+            ->where('view_on_front', 1)
+            ->get();
+
         return response()->json($works);
     }
 

@@ -177,27 +177,49 @@
 
         <div class="diploma-right">
             <div class="title">
-                @if (in_array($diploma->work->rank, [1, 2, 3]))
-                    Diplomă <br> Premiul <span ">{{ $diploma->work->rank }}</span>
-@else
-Diplomă de <br> mențiune
- @endif
+                Diplomă <br> de participare</span>
             </div>
 
             <div class="subtitle">
                 <span class="">Se acordă elevului/elevei</span><br />
-                <span class="">{{ $diploma->work->details->full_name }}</span>
+                <span class=""><strong>{{ $diploma->work->details->full_name }}</strong></span>
             </div>
 
             <div class="details">
-                de la <strong>Școala</strong> <span
-                    class="font-bold underline">{{ $diploma->work->details->school }}</span>
-                <br />coordonat/ă de prof. <span class="font-bold">{{ $diploma->work->details->mentor }}</span>
-                <br />pentru participarea la concursul "{{ $diploma->contest->name }}" - faza națională.</span>
+                de la Școala<span class="font-bold underline"><strong>{{ $diploma->work->details->school }}</strong>
+                </span>
+                <br />coordonat/ă de prof. <span class="font-bold"><strong>
+                        {{ $diploma->work->details->mentor }}</strong> </span>
+                <br />pentru participarea la concursul <strong> "{{ $diploma->contest->name }}"</strong> - faza
+                națională.</span>
+                @php
+                    $types = [
+                        'img' => 'Imagine',
+                        'artwork' => 'Lucrare de artă',
+                        'video' => 'video',
+                    ];
+                    if ($diploma->work->award_rank && in_array($diploma->work->award_rank, [1, 2, 3])) {
+                        echo '<br /><strong> Premiul ' .
+                            $diploma->work->award_rank .
+                            '</strong>  la categoria <span class="font-bold">' .
+                            $diploma->work->details->age_group .
+                            ' ani </span>';
+                    } elseif (in_array($diploma->work->rank, [1, 2, 3])) {
+                        echo '<br />Premiul ' .
+                            $diploma->work->rank .
+                            ' la categoria <span class="font-bold">' .
+                            $diploma->work->details->age_group .
+                            ' ani </span>, subcategorie <span class="font-bold">' .
+                            $types[$diploma->work->details->type] .
+                            ' </span>';
+                    }
+                @endphp
                 <br /><br /><br /><span class="font-bold text-blue-900 text-2xl italic mt-10">Asociația Parteneriatul
                     Global al Apei
                     din
                     România </span>
+
+
             </div>
 
             <!-- Signature Section -->

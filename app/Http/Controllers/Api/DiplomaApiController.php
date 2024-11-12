@@ -48,7 +48,8 @@ class DiplomaApiController extends Controller
             ->setPaper('a4', 'landscape')
             ->setOption('defaultFont', 'DejaVu Sans')
             ->setOption('isFontSubsettingEnabled', true)
-            ->setOption('isRemoteEnabled', true);
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('encoding', 'UTF-8');
 
         // Store PDF in the public disk
         $fileName = 'diplomas/diploma_' . $diploma->id . "_" . str_replace(' ', '_', $diploma->work->contest->name) . '_' . str_replace(' ', '_', $diploma->work->details->full_name) . '.pdf';

@@ -22,6 +22,8 @@ class Work extends Model
         'contest_id',
         'user_id',
         'rank',
+        'award_rank',
+        'view_on_front'
     ];
 
     public function contest()
