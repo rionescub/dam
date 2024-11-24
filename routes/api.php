@@ -1,17 +1,21 @@
 
 <?php
 
+use App\Models\Gallery;
+use App\Nova\Testimonial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\BlogApiController;
 use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\TeamApiController;
 use App\Http\Controllers\Api\UserApiController;
 use App\Http\Controllers\Api\WorkApiController;
 use App\Http\Controllers\Api\ScoreApiController;
 use App\Http\Controllers\Api\ContestApiController;
 use App\Http\Controllers\Api\DiplomaApiController;
-use App\Http\Controllers\Api\SponsorsApiController;
 use App\Http\Controllers\Api\GalleryApiController;
-use App\Models\Gallery;
+use App\Http\Controllers\Api\SponsorsApiController;
+use App\Http\Controllers\Api\TestimonialsApiController;
 
 Route::middleware('api')->group(function () {
     // Login route
@@ -31,6 +35,15 @@ Route::middleware('api')->group(function () {
     Route::post('/verify-email', [UserApiController::class, 'verifyEmail']);
 
     Route::get('/works-front', [WorkApiController::class, 'getFrontWorks']);
+
+    Route::get('/blogs', [BlogApiController::class, 'index']);
+
+    Route::get('/blogs/{id}', [BlogApiController::class, 'show']);
+
+    Route::get('/content/{link}/{page}', [TeamApiController::class, 'getContent'])->name('content.get');
+
+    Route::get('/teams/{link}', [TeamApiController::class, 'show']);
+
 
     // User routes
     Route::group(['middleware' => 'auth:sanctum'], function () {
@@ -70,6 +83,9 @@ Route::middleware('api')->group(function () {
 
     // Sponsor routes
     Route::get('/sponsors', [SponsorsApiController::class, 'index']);
+
+    // Testimonials routes
+    Route::get('/testimonials', [TestimonialsApiController::class, 'index']);
 
     // Test route
     Route::get('/test', function () {

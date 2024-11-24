@@ -60,7 +60,10 @@ class Score extends Resource
      * @var array
      */
     public static $search = [
-        'id'
+        'user.first_name',
+        'user.last_name',
+        'work.name',
+        'id',
     ];
 
     /**
@@ -75,9 +78,11 @@ class Score extends Resource
             ID::make()->sortable(),
 
             BelongsTo::make('User')
+                ->sortable()
                 ->rules('required'),
 
             BelongsTo::make('Work')
+                ->sortable()
                 ->rules('required'),
 
             Number::make('Creativity Score')

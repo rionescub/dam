@@ -12,6 +12,22 @@ use Laravel\Nova\Resource;
 class WorkDetails extends Resource
 {
     public static $model = \App\Models\WorkDetails::class;
+
+    public static function searchableColumns()
+    {
+        return [
+            'full_name',
+            'country',
+            'county',
+            'city',
+            'mentor',
+            'phone',
+            'school',
+            'year',
+            'type',
+            'age_group',
+        ];
+    }
     public static function indexQuery(NovaRequest $request, $query)
     {
         $user = $request->user();

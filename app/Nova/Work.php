@@ -69,6 +69,12 @@ class Work extends Resource
     public static $search = [
         'id',
         'name',
+        'description',
+        'title_en',
+        'description_en',
+        'video_url',
+        'file_path',
+
     ];
 
     /**
@@ -105,25 +111,31 @@ class Work extends Resource
             Number::make('Rank')
                 ->min(1)
                 ->readonly()
+                ->sortable()
                 ->rules('required', 'integer', 'min:1'),
 
             Number::make('Award Rank')
                 ->min(1)
+                ->sortable()
                 ->nullable(),
 
 
             Number::make('Total Score')
+                ->sortable()
                 ->readonly(),
 
             // Boolean::make('Is Finalized')
             //     ->readonly() // Prevents this field from being edited manually in Nova
             //     ->sortable(),
-            Boolean::make('View on Front'),
+            Boolean::make('View on Front')
+                ->sortable(),
 
             BelongsTo::make('Contest')
+                ->sortable()
                 ->rules('required'),
 
             BelongsTo::make('User')
+                ->sortable()
                 ->rules('required'),
 
             HasMany::make('Scores'),

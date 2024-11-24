@@ -13,4 +13,9 @@ class Team extends Model
     {
         return $this->belongsToMany(User::class);
     }
+
+    public function testimonials()
+    {
+        return $this->hasMany(Testimonials::class);
+    }
 }

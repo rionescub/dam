@@ -13,7 +13,7 @@ class GalleryApiController extends Controller
     public function index(Request $request): JsonResponse
     {
 
-        $teamId = Team::where('language_code', $request->locale)->first()->id;
+        $teamId = Team::where('link', $request->link)->first()->id;
 
         $galleries = Gallery::where('team_id', $teamId)
             ->orderBy('year', 'desc')

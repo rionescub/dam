@@ -33,6 +33,8 @@ class Gallery extends Resource
      */
     public static $search = [
         'id',
+        'title',
+        'contestant',
     ];
 
     /**
@@ -45,11 +47,23 @@ class Gallery extends Resource
     {
         return [
             ID::make()->sortable(),
-            Text::make('Title')->sortable()->rules('required', 'max:255'),
-            Image::make('Image')->disk('public')->path('old')->rules('required', 'image'),
-            Text::make('Contestant')->sortable()->rules('required', 'max:255'),
-            Number::make('Year')->sortable()->rules('required')->default(now()->year),
-            BelongsTo::make('Team')->sortable()->rules('required'),
+            Text::make('Title')
+                ->sortable()
+                ->rules('required', 'max:255'),
+            Image::make('Image')
+                ->disk('public')
+                ->path('old')
+                ->rules('required', 'image'),
+            Text::make('Contestant')
+                ->sortable()
+                ->rules('required', 'max:255'),
+            Number::make('Year')
+                ->sortable()
+                ->rules('required')
+                ->default(now()->year),
+            BelongsTo::make('Team')
+                ->sortable()
+                ->rules('required'),
         ];
     }
 

@@ -27,11 +27,24 @@ class Contact extends Resource
     {
         return [
             ID::make()->sortable(),
-            BelongsTo::make('Team')->sortable()->rules('required'), // Associate contact with a team
-            Text::make('Name')->sortable()->rules('required', 'max:255'),
-            Text::make('Email')->sortable()->rules('required', 'email'),
-            Text::make('Subject')->rules('required', 'max:255'),
-            Textarea::make('Comments')->rules('required'),
+
+            BelongsTo::make('Team')
+                ->sortable()
+                ->rules('required'), // Associate contact with a team
+
+            Text::make('Name')
+                ->sortable()
+                ->rules('required', 'max:255'),
+
+            Text::make('Email')
+                ->sortable()
+                ->rules('required', 'email'),
+
+            Text::make('Subject')
+                ->rules('required', 'max:255'),
+
+            Textarea::make('Comments')
+                ->rules('required'),
         ];
     }
 

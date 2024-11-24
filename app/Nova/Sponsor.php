@@ -25,8 +25,8 @@ class Sponsor extends Resource
 
         // If the user is not an admin, filter by the contests they have access to
         if (!$user->is_admin()) {
-            $query->whereHas('contest', function ($contestQuery) use ($user) {
-                $contestQuery->where('team_id', $user->current_team_id);
+            $query->whereHas('contests', function ($contestsQuery) use ($user) {
+                $contestsQuery->where('team_id', $user->current_team_id);
             });
         }
 
@@ -42,8 +42,10 @@ class Sponsor extends Resource
 
         // If the user is not an admin, filter by the contests they have access to
         if (!$user->is_admin()) {
-            $query->whereHas('contest', function ($contestQuery) use ($user) {
-                $contestQuery->where('team_id', $user->current_team_id);
+            $query->whereHas('sponsors', function ($sponsorsQuery) use ($user) {
+                $sponsorsQuery->whereHas('contest', function ($contestQuery) use ($user) {
+                    $contestQuery->where('team_id', $user->current_team_id);
+                });
             });
         }
 
@@ -54,7 +56,7 @@ class Sponsor extends Resource
      *
      * @var string
      */
-    public static $title = 'id';
+    public static $title = 'name';
 
     /**
      * The columns that should be searched.
@@ -63,6 +65,7 @@ class Sponsor extends Resource
      */
     public static $search = [
         'id',
+        'name',
     ];
 
     /**

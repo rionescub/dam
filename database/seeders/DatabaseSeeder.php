@@ -35,15 +35,15 @@ class DatabaseSeeder extends Seeder
         DB::table('teams')->insert([
             [
                 'name' => 'Romania',
-                'language_code' => 'ro',
+                'link' => 'ro',
             ],
             [
                 'name' => 'Hungary',
-                'language_code' => 'hu',
+                'link' => 'hu',
             ],
             [
                 'name' => 'Slovenia',
-                'language_code' => 'sl',
+                'link' => 'sl',
             ],
         ]);
 

@@ -34,7 +34,10 @@ class User extends Resource
         return "{$this->first_name} {$this->last_name}";
     }
 
-
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        return $query->where('current_team_id', $request->user()->current_team_id);
+    }
     /**
      * The columns that should be searched.
      *
@@ -74,7 +77,17 @@ class User extends Resource
                 ->creationRules('unique:users,email')
                 ->updateRules('unique:users,email,{{resourceId}}'),
 
-            BelongsTo::make('Current Team', 'currentTeam', Team::class)->nullable(),
+            BelongsTo::make('Current Team', 'currentTeam', Team::class)
+                ->nullable()
+                ->displayUsing(function ($team) {
+                    return $team->name;
+                })
+                ->readonly(function (Request $request) {
+                    return $request->user()->is_organizer() || $request->user()->current_team_id != null;
+                })
+                ->default(function (Request $request) {
+                    return $request->user()->is_organizer() ? $request->user()->current_team_id : null;
+                }),
 
             Password::make('Password')->onlyOnForms()
                 ->creationRules('required', Rules\Password::defaults())
@@ -85,7 +98,8 @@ class User extends Resource
                 ->onlyOnDetail()
                 ->hideFromDetail()
                 ->rules('required')
-                ->default(now()),
+                ->default(now())
+                ->creationRules('after_or_equal:now'),
         ];
     }
 

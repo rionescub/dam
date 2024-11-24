@@ -28,6 +28,8 @@ class UpdateContestResults extends Command
             ->where('ceremony_date', '>=', Carbon::now())
             ->get();
 
+        dd($contests);
+
         foreach ($contests as $contest) {
             // Get all works related to the contest
             $works = $contest->works;

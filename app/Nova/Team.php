@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use Illuminate\Support\Str;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
@@ -31,6 +32,8 @@ class Team extends Resource
      */
     public static $search = [
         'id',
+        'name',
+        'link'
     ];
 
     /**
@@ -44,7 +47,16 @@ class Team extends Resource
         return [
             ID::make()->sortable(),
             Text::make('Name')->sortable(),
-            Text::make('Language Code')->sortable(),
+            Text::make('Link')
+                ->sortable()
+                ->rules('required', 'unique:teams,link', 'regex:/^[a-zA-Z0-9\-]+$/')
+                ->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
+                    if (empty($request->$requestAttribute)) {
+                        $model->$attribute = Str::slug($request->name, '-');
+                    } else {
+                        $model->$attribute = Str::slug($request->$requestAttribute, '-');
+                    }
+                }),
             BelongsToMany::make('Users'),
         ];
     }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1ac95bc7fa6d4484fa7d769afcb8d889",
+    "content-hash": "8d3a22b3943dabf7dacde7b26bfdce74",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -326,7 +326,7 @@
         },
         {
             "name": "contest/running",
-            "version": "dev-main",
+            "version": "dev-rc_1",
             "dist": {
                 "type": "path",
                 "url": "./nova-components/Running",
@@ -3634,6 +3634,116 @@
                 }
             ],
             "time": "2024-09-24T14:04:43+00:00"
+        },
+        {
+            "name": "outl1ne/nova-settings",
+            "version": "5.2.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/outl1ne/nova-settings.git",
+                "reference": "f9678fce0b8b11331140897172a473468708a66f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/outl1ne/nova-settings/zipball/f9678fce0b8b11331140897172a473468708a66f",
+                "reference": "f9678fce0b8b11331140897172a473468708a66f",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/nova": "^4.26",
+                "outl1ne/nova-translations-loader": "^5.0",
+                "php": ">=8.0"
+            },
+            "require-dev": {
+                "laravel/nova-dusk-suite": "^9.3-dev",
+                "orchestra/testbench": "^7.0",
+                "orchestra/testbench-dusk": "^7.0",
+                "phpunit/phpunit": "^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Outl1ne\\NovaSettings\\NovaSettingsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "./src/helpers.php"
+                ],
+                "psr-4": {
+                    "Outl1ne\\NovaSettings\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A Laravel Nova tool for editing custom settings using native Nova fields.",
+            "keywords": [
+                "laravel",
+                "nova"
+            ],
+            "support": {
+                "issues": "https://github.com/outl1ne/nova-settings/issues",
+                "source": "https://github.com/outl1ne/nova-settings/tree/5.2.4"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/outl1ne",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-03-07T11:23:44+00:00"
+        },
+        {
+            "name": "outl1ne/nova-translations-loader",
+            "version": "5.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/outl1ne/nova-translations-loader.git",
+                "reference": "87be6da40633e0cd0b9276cf494f0ca8954eccc0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/outl1ne/nova-translations-loader/zipball/87be6da40633e0cd0b9276cf494f0ca8954eccc0",
+                "reference": "87be6da40633e0cd0b9276cf494f0ca8954eccc0",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/nova": "^4.0|^5.0",
+                "php": ">=8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [],
+                    "aliases": []
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Outl1ne\\NovaTranslationsLoader\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "This Laravel Nova package helps developers load translations into their packages.",
+            "keywords": [
+                "laravel",
+                "nova",
+                "optimistdigital",
+                "outl1ne",
+                "translations"
+            ],
+            "support": {
+                "issues": "https://github.com/outl1ne/nova-translations-loader/issues",
+                "source": "https://github.com/outl1ne/nova-translations-loader/tree/5.0.3"
+            },
+            "time": "2024-10-22T08:19:08+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",

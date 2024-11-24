@@ -53,7 +53,7 @@ class WorkApiController extends Controller
 
     public function getFrontWorks(Request $request)
     {
-        $team = Team::where('language_code', $request->locale)->first();
+        $team = Team::where('link', $request->link)->first();
 
         if (!$team) {
             return response()->json(['error' => 'Team not found'], 404);
@@ -207,8 +207,11 @@ class WorkApiController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'video_url' => 'nullable|url',
+            'file' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'video_url' => [
+                'nullable',
+                'regex:/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be|vimeo\.com|dropbox\.com|drive\.google\.com)\/.+$/'
+            ],
         ]);
 
         $user = $request->user();

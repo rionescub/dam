@@ -24,7 +24,7 @@ class Contest extends Resource
 {
     public static $model = \App\Models\Contest::class;
     public static $title = 'name';
-    public static $search = ['id', 'name'];
+    public static $search = ['id', 'name', 'phase'];
 
     public function fields(NovaRequest $request)
     {
@@ -36,16 +36,20 @@ class Contest extends Resource
                 ->rules('required', 'max:255'),
 
             Date::make('Start Date')
-                ->rules('required', 'after_or_equal:today'),
+                ->rules('required',)
+                ->sortable(),
 
             Date::make('End Date')
-                ->rules('required', 'after:start_date'),
+                ->rules('required', 'after:start_date')
+                ->sortable(),
 
             Date::make('Jury Date')
-                ->rules('required', 'after:start_date'),
+                ->rules('required', 'after:end_date')
+                ->sortable(),
 
             Date::make('Ceremony Date')
-                ->rules('required', 'after:start_date'),
+                ->rules('required', 'after:jury_date')
+                ->sortable(),
 
             // MultiSelect::make('Type')
             //     ->options([
@@ -60,7 +64,8 @@ class Contest extends Resource
                     'national' => 'National',
                     'international' => 'International',
                 ])
-                ->rules('required'),
+                ->rules('required')
+                ->sortable(),
 
             BelongsTo::make('Parent Contest', 'parentContest', self::class)
                 ->nullable(),

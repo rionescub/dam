@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Team;
 use App\Models\User;
 use App\Models\Work;
 use App\Models\Score;
@@ -12,6 +13,7 @@ use App\Policies\WorkPolicy;
 use App\Policies\ScorePolicy;
 use App\Policies\ContestPolicy;
 use App\Policies\DiplomaPolicy;
+use App\Policies\TeamPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -30,6 +32,7 @@ class AuthServiceProvider extends ServiceProvider
         Work::class => WorkPolicy::class,
         Score::class => ScorePolicy::class,
         Diploma::class => DiplomaPolicy::class,
+        Team::class => TeamPolicy::class,
     ];
 
     /**

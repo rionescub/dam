@@ -18,6 +18,9 @@ class Kernel extends HttpKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('contest:update-results')->daily();
+        $schedule->command('contest:add-to-parent')->daily();
+        $schedule->command('contest:notify-end')->dailyAt('23:59');
+        $schedule->command('contest:notify-new')->dailyAt('08:00');
     }
 
     protected $commands = [

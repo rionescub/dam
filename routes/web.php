@@ -5,6 +5,7 @@ use Laravel\Fortify\Fortify;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
+use App\Http\Controllers\CustomSettingsController;
 
 // Redirect the root URL to the admin login page
 Route::get('/', function () {
@@ -22,6 +23,11 @@ Fortify::registerView(fn() => view('auth.register'));
 Fortify::requestPasswordResetLinkView(fn() => view('auth.forgot-password'));
 Fortify::verifyEmailView(fn() => view('auth.verify-email'));
 Fortify::resetPasswordView(fn() => view('auth.reset-password'));
+
+Route::middleware(['nova', 'auth'])->group(function () {
+    Route::get('/nova-settings/settings', [CustomSettingsController::class, 'getSettings']);
+    Route::post('/nova-settings/settings', [CustomSettingsController::class, 'saveSettings']);
+});
 
 // Group all admin routes and protect them with 'auth' middleware
 Route::prefix('admin')->group(function () {

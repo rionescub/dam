@@ -18,6 +18,7 @@ class Diploma extends Resource
      * @var class-string<\App\Models\Diploma>
      */
     public static $model = \App\Models\Diploma::class;
+
     public static function indexQuery(NovaRequest $request, $query)
     {
         $user = $request->user();
@@ -62,6 +63,10 @@ class Diploma extends Resource
      * @var array
      */
     public static $search = [
+        'user.first_name',
+        'user.last_name',
+        'work.name',
+        'contest.name',
         'id',
     ];
 
