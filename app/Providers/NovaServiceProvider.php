@@ -110,6 +110,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                         ->path('/nova-settings/translations')->icon('translate'),
                     MenuItem::make('Terms')
                         ->path('/nova-settings/terms')->icon('document-text'),
+                    MenuItem::make('Sponsors')
+                        ->path('/nova-settings/sponsors')->icon('currency-dollar'),
 
                 ])->collapsable(),
             ];
@@ -199,7 +201,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             'Results' => $this->loadFieldsFrom(app_path('Nova/Settings/Results.php'), new TeamSettingsRepository($teamId, 'results')),
             'Translations' => $this->loadFieldsFrom(app_path('Nova/Settings/Translations.php'), new TeamSettingsRepository($teamId, 'translations')),
             'Terms' => $this->loadFieldsFrom(app_path('Nova/Settings/Terms.php'), new TeamSettingsRepository($teamId, 'terms')),
+            'Sponsors' => $this->loadFieldsFrom(app_path('Nova/Settings/Sponsors.php'), new TeamSettingsRepository($teamId, 'sponsors')),
         ];
+
 
 
         foreach ($fields as $section => $sectionFields) {

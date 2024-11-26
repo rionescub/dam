@@ -83,7 +83,7 @@ class User extends Resource
                     return $team->name;
                 })
                 ->readonly(function (Request $request) {
-                    return $request->user()->is_organizer() || $request->user()->current_team_id != null;
+                    return $request->user()->is_organizer() && $request->user()->current_team_id != null && !$request->user()->is_admin();
                 })
                 ->default(function (Request $request) {
                     return $request->user()->is_organizer() ? $request->user()->current_team_id : null;

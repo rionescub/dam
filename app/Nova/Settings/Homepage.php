@@ -9,6 +9,7 @@ use App\Helpers\TeamSettingsHelper;
 return array_map(function ($setting) {
     return TeamSettingsHelper::makeSetting(...$setting);
 }, [
+    ['website_logo', 'Website Logo', Image::class],
     ['home_title', 'Home Page Title', Text::class],
     ['home_subtitle1', 'Home Page Subtitle 1', Text::class],
     ['home_subtitle2', 'Home Page Subtitle 2', Text::class],

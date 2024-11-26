@@ -24,11 +24,6 @@ Fortify::requestPasswordResetLinkView(fn() => view('auth.forgot-password'));
 Fortify::verifyEmailView(fn() => view('auth.verify-email'));
 Fortify::resetPasswordView(fn() => view('auth.reset-password'));
 
-Route::middleware(['nova', 'auth'])->group(function () {
-    Route::get('/nova-settings/settings', [CustomSettingsController::class, 'getSettings']);
-    Route::post('/nova-settings/settings', [CustomSettingsController::class, 'saveSettings']);
-});
-
 // Group all admin routes and protect them with 'auth' middleware
 Route::prefix('admin')->group(function () {
     // Publicly accessible admin login route

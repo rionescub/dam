@@ -17,7 +17,7 @@ return new class extends Migration
         // Settings table
         Schema::create(NovaSettings::getSettingsTableName(), function (Blueprint $table) {
             $table->unsignedBigInteger('team_id')->nullable();
-            $table->string('group');
+            $table->string('group')->nullable();
             $table->string('key');
             $table->text('value')->nullable();
             $table->timestamps();
