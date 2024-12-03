@@ -134,9 +134,15 @@ class Work extends Resource
                 ->sortable()
                 ->rules('required'),
 
-            BelongsTo::make('User')
+            BelongsTo::make('User', 'user', User::class)
                 ->sortable()
-                ->rules('required'),
+                ->rules('required')
+                ->searchable()
+                ->relatableQueryUsing(function (NovaRequest $request, $query) {
+                    return $query->where('current_team_id', $request->user()->current_team_id);
+                }),
+
+
 
             HasMany::make('Scores'),
         ];

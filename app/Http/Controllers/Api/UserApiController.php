@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
+use Outl1ne\NovaSettings\NovaSettings;
 
 class UserApiController extends Controller
 {
@@ -33,15 +34,15 @@ class UserApiController extends Controller
         }
 
         if (!Auth::attempt($credentials)) {
-            return response()->json(['error' => 'Invalid login details'], 401);
+            return response()->json(['error' => NovaSettings::getSetting('login_wrong_credentials_message')], 401);
         }
 
         if (Auth::user()->email_verified_at === null) {
-            return response()->json(['error' => 'Please verify your email'], 401);
+            return response()->json(['error' => NovaSettings::getSetting('login_verify_email_message')], 401);
         }
 
         if (Auth::user()->current_team_id !== $team->id) {
-            return response()->json(['error' => 'You are not a member of this team'], 401);
+            return response()->json(['error' => NovaSettings::getSetting('login_wrong_credentials_message')], 401);
         }
 
         $user = Auth::user();

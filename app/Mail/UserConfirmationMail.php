@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -22,11 +23,18 @@ class UserConfirmationMail extends Mailable
 
     public function build()
     {
-        return $this->view('emails.user_confirmation')
-                    ->with([
-                        'user' => $this->user,
-                        'verificationUrl' => $this->verificationUrl,
-                    ])
-                    ->subject('Confirm Your Email Address');
+        $view = match ($this->user->current_team_id) {
+            1 => 'emails.user_confirmation_ro',
+            2 => 'emails.user_confirmation_hu',
+            3 => 'emails.user_confirmation_sl',
+            default => 'emails.user_confirmation',
+        };
+
+        return $this->view($view)
+            ->with([
+                'user' => $this->user,
+                'verificationUrl' => $this->verificationUrl,
+            ])
+            ->subject('Confirm Your Email Address');
     }
 }

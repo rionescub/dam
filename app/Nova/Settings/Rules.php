@@ -16,5 +16,4 @@ return array_map(function ($setting) {
     ['rules_content', 'Rules Content', Trix::class],
     ['rules_pdf_file', 'Rules PDF File', File::class],
     ['rules_pdf_button_text', 'Rules PDF Button Text', Text::class],
-
 ]);

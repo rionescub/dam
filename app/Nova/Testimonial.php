@@ -66,11 +66,11 @@ class Testimonial extends Resource
                 ->max(5),
 
             BelongsTo::make('Team', 'team', Team::class)
-                ->default(fn() => auth()->user()->currentTeam?->id)
-                ->fillUsing(fn($request, $model, $attribute, $requestAttribute) => $model->{$attribute} = auth()->user()->currentTeam?->id)
+                ->rules('required')
+                ->default(fn() => auth()->user()->current_team_id ?? throw new \Exception('Team ID is required'))
+                ->fillUsing(fn($request, $model, $attribute, $requestAttribute) => $model->{$attribute} = auth()->user()->current_team_id ?? throw new \Exception('Team ID is required'))
                 ->hideWhenCreating()
-                ->withMeta(['value' => auth()->user()->currentTeam?->id])
-                ->rules('required'),
+                ->withMeta(['value' => auth()->user()->current_team_id ?? null]),
         ];
     }
 

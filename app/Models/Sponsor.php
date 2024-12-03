@@ -14,6 +14,7 @@ class Sponsor extends Model
         'name',
         'image',
         'url',
+        'type',
     ];
 
 
@@ -23,5 +24,10 @@ class Sponsor extends Model
     public function contests()
     {
         return $this->belongsToMany(Contest::class);
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
     }
 }

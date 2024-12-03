@@ -36,6 +36,9 @@ class User extends Resource
 
     public static function indexQuery(NovaRequest $request, $query)
     {
+        if ($request->user()->is_super_admin()) {
+            return $query;
+        }
         return $query->where('current_team_id', $request->user()->current_team_id);
     }
     /**
@@ -82,12 +85,21 @@ class User extends Resource
                 ->displayUsing(function ($team) {
                     return $team->name;
                 })
-                ->readonly(function (Request $request) {
-                    return $request->user()->is_organizer() && $request->user()->current_team_id != null && !$request->user()->is_admin();
+                ->hideFromIndex()
+                ->hideFromDetail(function (Request $request) {
+                    return !$request->user()->is_super_admin();
+                })
+                ->fillUsing(function (NovaRequest $request, $model, $attribute, $requestAttribute) {
+                    if (!$request->user()->is_super_admin()) {
+                        $model->current_team_id = $request->user()->current_team_id;
+                    } else {
+                        $model->$attribute = $request->$requestAttribute;
+                    }
                 })
                 ->default(function (Request $request) {
-                    return $request->user()->is_organizer() ? $request->user()->current_team_id : null;
+                    return $request->user()->is_super_admin() ? null : $request->user()->current_team_id;
                 }),
+
 
             Password::make('Password')->onlyOnForms()
                 ->creationRules('required', Rules\Password::defaults())

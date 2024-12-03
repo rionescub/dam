@@ -10,8 +10,8 @@ return array_map(function ($setting) {
 }, [
     ['contact_banner_image', 'Contact Banner', Image::class],
     ['contact_title', 'Contact Page Title', Text::class],
-    ['email_1', 'First email', Text::class],
-    ['email_2', 'Second email', Text::class],
+    ['email_1', 'First Contact Method', Text::class],
+    ['email_2', 'Second Contact Method', Text::class],
     ['contact_form_title', 'Contact Form Title', Text::class],
     ['contact_form_name_field', 'Contact Form Name Field', Text::class],
     ['contact_form_email_field', 'Contact Form Email Field', Text::class],

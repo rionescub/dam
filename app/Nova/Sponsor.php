@@ -7,6 +7,7 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\URL;
 use Laravel\Nova\Fields\BelongsToMany;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
 
@@ -24,7 +25,9 @@ class Sponsor extends Resource
         $user = $request->user();
 
         // If the user is not an admin, filter by the contests they have access to
-        if (!$user->is_admin()) {
+        if ($user->is_super_admin()) {
+            return $query;
+        } else {
             $query->whereHas('contests', function ($contestsQuery) use ($user) {
                 $contestsQuery->where('team_id', $user->current_team_id);
             });
@@ -40,8 +43,9 @@ class Sponsor extends Resource
     {
         $user = $request->user();
 
-        // If the user is not an admin, filter by the contests they have access to
-        if (!$user->is_admin()) {
+        if ($user->is_super_admin()) {
+            return $query;
+        } else {
             $query->whereHas('sponsors', function ($sponsorsQuery) use ($user) {
                 $sponsorsQuery->whereHas('contest', function ($contestQuery) use ($user) {
                     $contestQuery->where('team_id', $user->current_team_id);
@@ -88,6 +92,24 @@ class Sponsor extends Resource
 
             URL::make('Url')
                 ->rules('nullable', 'url'),
+
+            Select::make('Type')
+                ->options([
+                    'sponsor' => 'Sponsor',
+                    'partner' => 'Partner',
+                    'supporter' => 'Supporter',
+                ]),
+
+            Select::make('Team', 'team_id')
+                ->options(function () {
+                    return \App\Models\Team::all()->pluck('name', 'id');
+                })
+                ->rules('required')
+                ->default(auth()->user()->current_team_id)
+                ->displayUsing(function ($team) {
+                    return \App\Models\Team::find($team)->name;
+                })
+                ->hideFromIndex(),
 
             BelongsToMany::make('Contests'),
         ];

@@ -26,6 +26,14 @@ class Contest extends Resource
     public static $title = 'name';
     public static $search = ['id', 'name', 'phase'];
 
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        if ($request->user()->is_super_admin()) {
+            return $query;
+        }
+        return $query->where('team_id', $request->user()->current_team_id);
+    }
+
     public function fields(NovaRequest $request)
     {
         return [
@@ -100,6 +108,9 @@ class Contest extends Resource
                 })
                 ->rules('required')
                 ->default(auth()->user()->current_team_id)
+                ->displayUsing(function ($team) {
+                    return \App\Models\Team::find($team)->name;
+                })
                 ->hideFromIndex(),
         ];
     }

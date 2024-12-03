@@ -62,8 +62,15 @@ class Gallery extends Resource
                 ->rules('required')
                 ->default(now()->year),
             BelongsTo::make('Team')
+                ->display('name')
                 ->sortable()
-                ->rules('required'),
+                ->rules('required')
+                ->default(function (Request $request) {
+                    return $request->user()->current_team_id;
+                })
+                ->hide(function (Request $request) {
+                    return !$request->user()->is_super_admin();
+                }),
         ];
     }
 

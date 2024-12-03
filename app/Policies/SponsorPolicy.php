@@ -13,7 +13,7 @@ class SponsorPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->is_organizer();
+        return $user->is_organizer() || $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -21,7 +21,7 @@ class SponsorPolicy
      */
     public function view(User $user, Sponsor $sponsor): bool
     {
-        return $user->is_organizer();
+        return $user->is_organizer() || $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -29,7 +29,7 @@ class SponsorPolicy
      */
     public function create(User $user): bool
     {
-        return $user->is_admin();
+        return $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -37,7 +37,7 @@ class SponsorPolicy
      */
     public function update(User $user, Sponsor $sponsor): bool
     {
-        return $user->is_admin();
+        return $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -45,7 +45,7 @@ class SponsorPolicy
      */
     public function delete(User $user, Sponsor $Sponsor): bool
     {
-        return $user->is_admin();
+        return $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -53,7 +53,7 @@ class SponsorPolicy
      */
     public function restore(User $user, Sponsor $Sponsor): bool
     {
-        return $user->is_admin();
+        return $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -61,6 +61,6 @@ class SponsorPolicy
      */
     public function forceDelete(User $user, Sponsor $Sponsor): bool
     {
-        return $user->is_admin();
+        return $user->is_admin() || $user->is_super_admin();
     }
 }

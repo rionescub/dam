@@ -4,6 +4,7 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\Textarea;
 use App\Helpers\TeamSettingsHelper;
+use Laravel\Nova\Fields\URL;
 
 return array_map(function ($setting) {
     return TeamSettingsHelper::makeSetting(...$setting);
@@ -14,6 +15,8 @@ return array_map(function ($setting) {
     ['about_us_page_name', 'About Us Page Name', Text::class],
     ['blog_page_name', 'Blog Page Name', Text::class],
     ['my_account_page_name', 'My Account Page Name', Text::class],
+    ['send_art', 'Send Art Page Name', Text::class],
+    ['rata_art', 'Rate Art Page Name', Text::class],
     ['results_page_name', 'Results Page Name', Text::class],
     ['rules_page_name', 'Rules Page Name', Text::class],
     ['sponsors_page_name', 'Sponsors Page Name', Text::class],
@@ -32,6 +35,8 @@ return array_map(function ($setting) {
     ['login_submit_button', 'Login Submit Button', Text::class],
     ['login_register_button', 'Login Register Button', Text::class],
     ['login_register_text', 'Login Register Text', Text::class],
+    ['login_wrong_credentials_message', 'Login Wrong Credentials Message', Text::class],
+    ['login_verify_email_message', 'Login Verify Email Message', Text::class],
     ['forgot_password_form_title', 'Forgot Password Form Title', Text::class],
     ['forgot_password_email_field', 'Forgot Password Email Field', Text::class],
     ['forgot_password_submit_button', 'Forgot Password Submit Button', Text::class],
@@ -44,7 +49,13 @@ return array_map(function ($setting) {
     ['register_submit_button', 'Register Submit Button', Text::class],
     ['register_login_button', 'Register Login Button', Text::class],
     ['register_login_text', 'Register Login Text', Text::class],
-    ['register_terms_field', 'Register Terms Field', Text::class],
+    ['register_terms_field', 'Register Terms Checkbox Accept', Text::class],
+    ['register_error_message', 'Register Error Message', Text::class],
+    ['register_success_message', 'Register Success Message', Text::class],
+    ['register_congratulations_message', 'Register Congratulations Message', Text::class],
+    ['register_account_created', 'Register Account Created Message', Text::class],
+    ['register_already_registered_message', 'Register Already Registered Message', Text::class],
+    ['register_verification_email_sent', 'Password Mismatch Error', Text::class],
     ['verify_email_form_title', 'Verify Email Form Title', Text::class],
     ['verify_email_success_message', 'Verify Email Success Message', Text::class],
     ['verify_email_loading_message', 'Verify Email Loading Message', Text::class],
@@ -93,4 +104,7 @@ return array_map(function ($setting) {
     ['profile_details', 'Profile Details', Text::class],
     ['profile_success', 'Profile Success Message', Text::class],
     ['profile_error', 'Profile Error Message', Text::class],
+    ['facebook_link', 'Facebook Link', URL::class],
+    ['instagram_link', 'Instagram Link', URL::class],
+    ['youtube_link', 'Youtube Link', URL::class],
 ]);

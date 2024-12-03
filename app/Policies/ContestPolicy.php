@@ -13,7 +13,7 @@ class ContestPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->is_organizer();
+        return $user->is_organizer() || $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -21,7 +21,7 @@ class ContestPolicy
      */
     public function view(User $user, Contest $contest): bool
     {
-        return $user->is_organizer();
+        return $user->is_organizer() || $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -29,7 +29,7 @@ class ContestPolicy
      */
     public function create(User $user): bool
     {
-        return $user->is_organizer();
+        return $user->is_organizer() || $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -37,7 +37,7 @@ class ContestPolicy
      */
     public function update(User $user, Contest $contest): bool
     {
-        return $user->is_organizer();
+        return $user->is_organizer() || $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -45,7 +45,7 @@ class ContestPolicy
      */
     public function delete(User $user, Contest $contest): bool
     {
-        return $user->is_admin();
+        return $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -53,7 +53,7 @@ class ContestPolicy
      */
     public function restore(User $user, Contest $contest): bool
     {
-        return $user->is_admin();
+        return $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -61,6 +61,6 @@ class ContestPolicy
      */
     public function forceDelete(User $user, Contest $contest): bool
     {
-        return $user->is_admin();
+        return $user->is_admin() || $user->is_super_admin();
     }
 }

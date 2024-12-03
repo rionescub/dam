@@ -14,6 +14,7 @@ return array_map(function ($setting) {
 }, [
     ['about_banner_image', 'About Banner', Image::class],
     ['about_title', 'About Page Title', Text::class],
+    ['about_description', 'About Description', Textarea::class],
     ['about_metric_number', 'About Metric Number', Number::class],
     ['about_metric_number_text', 'About Metric Number Text', Text::class],
     ['about_metric_title', 'About Metric Title', Text::class],

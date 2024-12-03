@@ -2,37 +2,36 @@
 <html>
 
 <head>
-    <title>Confirmare adresa de email</title>
+    <title>Email Confirmation</title>
 </head>
 
 <body>
-    <p>Bună ziua, {{ $user->first_name }}!</p>
-    <p>Felicitări! Te-ai înregistrat cu succes pentru competiția „Artistul Dunării 2024”!</p>
-    <p>Îți mulțumim pentru interesul acordat și pentru dorința de a contribui la protecția mediului prin creațiile tale
-        artistice. Așteptăm cu nerăbdare să vedem cum Dunărea și afluenții săi te vor inspira.</p>
-    <p>Pentru a confirma adresa de email, te rugam sa urmezi linkul de mai jos:</p>
-    <a href="{{ $verificationUrl }}">Confirma Email</a>
+    <p>Hi, {{ $user->first_name }}!</p>
+    <p>Congratulations! You have successfully registered for the "Artist of the Danube 2024" competition!</p>
+    <p>Thank you for your interest and for wanting to contribute to the protection of the environment through your
+        artistic creations. We are eagerly waiting to see how the Danube and its tributaries will inspire you.</p>
+    <p>Please follow the link below to confirm your email address:</p>
+    <a href="{{ $verificationUrl }}">Confirm Email</a>
 </body>
-<p> Ce urmează?</p>
+<p>What's next?</p>
 <ol>
-    <li>Pregătește-ți lucrarea: Creează o lucrare originală inspirată de Dunăre (artă, fotografie sau video).</li>
-    <li>Încărcarea lucrării: Poți încărca lucrarea ta pe platformă până pe 7 noiembrie 2024, ora 23:00.</li>
-    <li>Verifică regulamentul: Asigură-te că ai citit regulamentul oficial pentru a îndeplini toate cerințele
-        competiției.</li>
+    <li>Prepare your artwork: Create an original work inspired by the Danube (art, photography, or video).</li>
+    <li>Upload your artwork: You can upload your artwork to the platform until November 7, 2024, at 23:00.</li>
+    <li>Check the rules: Make sure to read the official rules of the competition to fulfill all the requirements.</li>
 </ol>
-<p>Premii:</p>
+<p>Prizes:</p>
 <ul>
-    <li>Locul 1: €100 (categorii 6-11 ani și 12-18 ani)</li>
-    <li>Locul 2: €60 (categorii 6-11 ani și 12-18 ani)</li>
-    <li>Locul 3: €40 (categorii 6-11 ani și 12-18 ani)</li>
+    <li>1st place: €100 (categories 6-11 years and 12-18 years)</li>
+    <li>2nd place: €60 (categories 6-11 years and 12-18 years)</li>
+    <li>3rd place: €40 (categories 6-11 years and 12-18 years)</li>
 </ul>
-<p>Diplome de participare: Toți participanții vor primi o diplomă de participare!</p>
-<p>Dacă ai întrebări, nu ezita să ne contactezi la <a
-        href="mailto:artistuldunariigwp@gmail.com">artistuldunariigwp@gmail.com</a> sau să consulți regulamentul
-    competiției pe site-ul nostru.</p>
-<p>Succes și multă inspirație în realizarea lucrării tale!</p>
-<p>Cu drag,</p>
-<p>Echipa „Artistul Dunării 2024”</p>
+<p>Participation certificates: All participants will receive a certificate of participation!</p>
+<p>If you have any questions, don't hesitate to contact us at <a
+        href="mailto:artistuldunariigwp@gmail.com">artistuldunariigwp@gmail.com</a> or to consult the competition rules
+    on our website.</p>
+<p>Good luck and lots of inspiration for your artwork!</p>
+<p>Best regards,</p>
+<p>The "DAM 2024" team</p>
 </body>
 
 </html>
