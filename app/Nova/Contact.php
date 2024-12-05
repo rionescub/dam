@@ -23,6 +23,15 @@ class Contact extends Resource
         'subject',
     ];
 
+
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        if ($request->user()->is_super_admin()) {
+            return $query;
+        }
+        return $query->where('team_id', $request->user()->current_team_id);
+    }
+
     public function fields(Request $request)
     {
         return [
@@ -30,7 +39,7 @@ class Contact extends Resource
 
             BelongsTo::make('Team')
                 ->sortable()
-                ->rules('required'), // Associate contact with a team
+                ->rules('required'),
 
             Text::make('Name')
                 ->sortable()

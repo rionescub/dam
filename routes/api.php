@@ -6,7 +6,7 @@ use App\Nova\Testimonial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\BlogApiController;
-use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\ContactApiController;
 use App\Http\Controllers\Api\TeamApiController;
 use App\Http\Controllers\Api\UserApiController;
 use App\Http\Controllers\Api\WorkApiController;
@@ -28,7 +28,7 @@ Route::middleware('api')->group(function () {
 
     Route::post('/register', [UserApiController::class, 'register']);
 
-    Route::post('/contact', [ContactController::class, 'store']);
+    Route::post('/contact', [ContactApiController::class, 'store']);
 
     Route::get('/gallery', [GalleryApiController::class, 'index']);
 

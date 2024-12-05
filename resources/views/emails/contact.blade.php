@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Confirm Your Email Address</title>
+    <title>New Message Received from contact form on {{ config('app.name', 'Protalentis') }}</title>
 </head>
 
 <body>

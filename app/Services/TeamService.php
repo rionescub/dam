@@ -20,7 +20,7 @@ class TeamService
      */
     public function getTeamIds()
     {
-        if ($this->user->is_admin()) {
+        if ($this->user->is_super_admin()) {
             // Admins do not need team filters.
             return [];
         }

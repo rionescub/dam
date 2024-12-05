@@ -13,7 +13,7 @@ class ScorePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->is_organizer();
+        return $user->is_organizer() || $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -21,7 +21,7 @@ class ScorePolicy
      */
     public function view(User $user, Score $Score): bool
     {
-        return $user->is_organizer();
+        return $user->is_organizer() || $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -29,7 +29,7 @@ class ScorePolicy
      */
     public function create(User $user): bool
     {
-        return $user->is_admin();
+        return $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -37,7 +37,7 @@ class ScorePolicy
      */
     public function update(User $user, Score $Score): bool
     {
-        return $user->is_admin();
+        return $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -45,7 +45,7 @@ class ScorePolicy
      */
     public function delete(User $user, Score $Score): bool
     {
-        return $user->is_admin();
+        return $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -53,7 +53,7 @@ class ScorePolicy
      */
     public function restore(User $user, Score $Score): bool
     {
-        return $user->is_admin();
+        return $user->is_admin() || $user->is_super_admin();
     }
 
     /**
@@ -61,6 +61,6 @@ class ScorePolicy
      */
     public function forceDelete(User $user, Score $Score): bool
     {
-        return $user->is_admin();
+        return $user->is_admin() || $user->is_super_admin();
     }
 }

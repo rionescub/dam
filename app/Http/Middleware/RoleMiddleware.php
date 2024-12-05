@@ -16,7 +16,7 @@ class RoleMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (auth()->check() && in_array(auth()->user()->role, ['admin', 'organizer'])) {
+        if (auth()->check() && in_array(auth()->user()->role, ['admin', 'organizer','superadmin'])) {
             return $next($request);
         }
 

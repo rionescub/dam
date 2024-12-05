@@ -28,6 +28,8 @@ return array_map(function ($setting) {
     ['contact_us_page_name', 'Contact Us Page Name', Text::class],
     ['usefull_links', 'Usefull Links', Text::class],
     ['company_links', 'Company Links', Text::class],
+    ['contact_success_message', 'Contact Success Message', Text::class],
+    ['contact_error_message', 'Contact Error Message', Text::class],
     ['login_form_title', 'Login Form Title', Text::class],
     ['login_email_field', 'Login Email Field', Text::class],
     ['login_password_field', 'Login Password Field', Text::class],
