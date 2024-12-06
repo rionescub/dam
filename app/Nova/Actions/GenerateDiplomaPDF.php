@@ -3,21 +3,19 @@
 namespace App\Nova\Actions;
 
 use App\Models\Diploma;
-use App\Models\WorkDetails;
 use Illuminate\Bus\Queueable;
-use Laravel\Nova\Actions\Action;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Collection;
-use Laravel\Nova\Fields\ActionFields;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Collection;
+use Laravel\Nova\Actions\Action;
+use Laravel\Nova\Fields\ActionFields;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class GenerateDiplomaPDF extends Action
+class GenerateDiplomaPDF extends Action implements ShouldQueue
 {
     use Queueable;
-
-    public $confirmable = false;
 
     /**
      * The name of the action.
@@ -31,31 +29,47 @@ class GenerateDiplomaPDF extends Action
      *
      * @param  \Laravel\Nova\Fields\ActionFields  $fields
      * @param  \Illuminate\Support\Collection  $models
-     * @return mixed
+     * @return \Laravel\Nova\Actions\Action|\Laravel\Nova\Actions\Action[]
      */
     public function handle(ActionFields $fields, Collection $models)
     {
-        foreach ($models as $diploma) {
-            $user = $diploma->user;
-            $contest = $diploma->work->contest;
-            $work = $diploma->work;
-            $details = $diploma->work->details;
+        // Array to hold download URLs
+        $downloadLinks = [];
 
-            // Load the view and pass the diploma data
+        foreach ($models as $diploma) {
+            // Generate the PDF
             $pdf = PDF::loadView('pdf.diploma', compact('diploma'))
                 ->setPaper('a4', 'landscape')
                 ->setOption('defaultFont', 'DejaVu Sans')
                 ->setOption('isFontSubsettingEnabled', true)
                 ->setOption('isRemoteEnabled', true);
 
+            // Define the file name and path
+            $fileName = 'diploma_' . $diploma->id . '.pdf';
+            $filePath = 'diplomas/' . $fileName;
 
-            // You can store the PDF if needed, for example in public storage
-            $fileName = 'diplomas/diploma_' . $diploma->id . '.pdf';
-            Storage::put($fileName, $pdf->output());
+            // Store the PDF in the storage (e.g., local disk)
+            Storage::put($filePath, $pdf->output());
 
-            // Return a download link
-            return Action::downloadURL(Storage::url($fileName), 'diploma_' . $diploma->id . '.pdf');
+            // Generate a temporary signed URL valid for 5 minutes
+            $url = URL::temporarySignedRoute(
+                'download-diploma', // Route name
+                now()->addMinutes(5), // Expiration time
+                ['diploma' => $diploma->id] // Route parameters
+            );
+
+            // Add to the download links array
+            $downloadLinks[] = "<a href='{$url}' target='_blank'>Download {$fileName}</a>";
         }
+
+        // If only one diploma, return a single download link
+        if ($downloadLinks->count() === 1) {
+            return Action::download($downloadLinks[0], 'diploma.pdf');
+        }
+
+        // If multiple diplomas, return a message with all download links
+        $message = implode('<br>', $downloadLinks);
+        return Action::message($message);
     }
 
     /**
@@ -65,7 +79,6 @@ class GenerateDiplomaPDF extends Action
      */
     public function fields(NovaRequest $request)
     {
-        $this->request = $request;
         return [];
     }
 }

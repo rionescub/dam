@@ -4,9 +4,11 @@ namespace App\Nova;
 
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\HasOne;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\BelongsTo;
+use Illuminate\Support\Facades\URL;
 use App\Nova\Actions\GenerateDiplomaPDF;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -95,6 +97,14 @@ class Diploma extends Resource
 
             Textarea::make('Description')
                 ->rules('required'),
+
+            Text::make('Download', 'id')
+                ->displayUsing(function ($id) {
+                    return '<a href="' . route('diploma.download', ['diploma' => $id]) . '">Download</a>';
+                })
+                ->onlyOnIndex()
+                ->asHtml()
+
         ];
     }
 
