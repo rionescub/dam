@@ -73,14 +73,17 @@ class UserApiController extends Controller
     // Fetch authenticated user data
     public function user(Request $request)
     {
-
         return response()->json($request->user()->load('currentTeam'));
     }
 
     // View user profile
     public function viewUser()
     {
-        $user = Auth::user()->load('currentTeam');
+        $team = Team::where('team', request('team'))->first();
+        $user = Auth::user();
+        if ($user->current_team_id !== $team->id) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
         return response()->json($user);
     }
 

@@ -16,7 +16,7 @@ return array_map(function ($setting) {
     ['blog_page_name', 'Blog Page Name', Text::class],
     ['my_account_page_name', 'My Account Page Name', Text::class],
     ['send_art', 'Send Art Page Name', Text::class],
-    ['rata_art', 'Rate Art Page Name', Text::class],
+    ['rate_art', 'Rate Art Page Name', Text::class],
     ['results_page_name', 'Results Page Name', Text::class],
     ['rules_page_name', 'Rules Page Name', Text::class],
     ['sponsors_page_name', 'Sponsors Page Name', Text::class],
