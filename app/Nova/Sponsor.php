@@ -24,37 +24,33 @@ class Sponsor extends Resource
     {
         $user = $request->user();
 
-        // If the user is not an admin, filter by the contests they have access to
+        // If the user is a super admin, return the query without modifications
         if ($user->is_super_admin()) {
             return $query;
-        } else {
-            $query->whereHas('contests', function ($contestsQuery) use ($user) {
-                $contestsQuery->where('team_id', $user->current_team_id);
-            });
         }
+
+        // Filter sponsors by team_id matching the user's current_team_id
+        $query->where('team_id', $user->current_team_id);
 
         return $query;
     }
 
-    /**
-     * Modify the query used to retrieve a single resource for details.
-     */
-    public static function detailQuery(NovaRequest $request, $query)
-    {
-        $user = $request->user();
 
-        if ($user->is_super_admin()) {
+        /**
+         * Modify the query used to retrieve a single resource for details.
+         */
+        public static function detailQuery(NovaRequest $request, $query)
+        {
+            $user = $request->user();
+
+            if ($user->is_super_admin()) {
+                return $query;
+            } else {
+                $query->where('team_id', $user->current_team_id);
+            }
+
             return $query;
-        } else {
-            $query->whereHas('sponsors', function ($sponsorsQuery) use ($user) {
-                $sponsorsQuery->whereHas('contest', function ($contestQuery) use ($user) {
-                    $contestQuery->where('team_id', $user->current_team_id);
-                });
-            });
         }
-
-        return $query;
-    }
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
@@ -101,8 +97,12 @@ class Sponsor extends Resource
                 ]),
 
             Select::make('Team', 'team_id')
-                ->options(function () {
-                    return \App\Models\Team::all()->pluck('name', 'id');
+                ->options(function () use ($request) {
+                    if ($request->user()->is_super_admin()) {
+                        return \App\Models\Team::all()->pluck('name', 'id');
+                    } else {
+                        return \App\Models\Team::where('id', $request->user()->current_team_id)->pluck('name', 'id');
+                    }
                 })
                 ->rules('required')
                 ->default(auth()->user()->current_team_id)
@@ -110,6 +110,7 @@ class Sponsor extends Resource
                     return \App\Models\Team::find($team)->name;
                 })
                 ->hideFromIndex(),
+
 
             BelongsToMany::make('Contests'),
         ];

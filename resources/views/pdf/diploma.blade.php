@@ -186,7 +186,7 @@
             </div>
 
             <div class="details">
-                de la Școala<span class="font-bold underline"><strong>{{ $diploma->work->details->school }}</strong>
+                de la <span class="font-bold underline"><strong>{{ $diploma->work->details->school }}</strong>
                 </span>
                 <br />coordonat/ă de prof. <span class="font-bold"><strong>
                         {{ $diploma->work->details->mentor }}</strong> </span>

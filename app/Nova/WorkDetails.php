@@ -63,13 +63,13 @@ class WorkDetails extends Resource
         return [
             ID::make()->sortable(),
 
-            BelongsTo::make('Work')
-                ->filter(function ($query, $request) {
-                    $user = $request->user();
-                    $query->whereHas('contest', function ($contestQuery) use ($user) {
-                        $contestQuery->where('team_id', $user->current_team_id);
-                    });
-                }),
+            BelongsTo::make('Work'),
+                // ->filter(function ($query, $request) {
+                //     $user = $request->user();
+                //     $query->whereHas('contest', function ($contestQuery) use ($user) {
+                //         $contestQuery->where('team_id', $user->current_team_id);
+                //     });
+                // }),
 
             Text::make('Full Name')
                 ->sortable()
