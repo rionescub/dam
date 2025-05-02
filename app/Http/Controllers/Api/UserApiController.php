@@ -138,6 +138,7 @@ class UserApiController extends Controller
             'recaptcha' => 'required|string',
             'confirm_password' => 'required|string|min:8',
             'team_slug' => 'required|exists:teams,link',
+            'further_communications' => 'sometimes|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -165,6 +166,7 @@ class UserApiController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'contestant',
+            'further_communications' => $request->input('further_communications', false),
         ]);
 
         $user->save();

@@ -115,5 +115,5 @@ return array_map(function ($setting) {
     ['facebook_link', 'Facebook Link', URL::class],
     ['instagram_link', 'Instagram Link', URL::class],
     ['youtube_link', 'Youtube Link', URL::class],
-    ['further_communications','Further Communications Message', Text::class],
+    ['register_further_communications','Further Communications Message', Text::class],
 ]);
