@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Scopes\CurrentTeam;
+use App\Scopes\ContestTeam;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -18,7 +18,10 @@ class Diploma extends Model
         'description'
     ];
 
-
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new ContestTeam());
+    }
     public function user()
     {
         return $this->belongsTo(User::class);

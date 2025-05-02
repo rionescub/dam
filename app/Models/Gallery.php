@@ -23,8 +23,8 @@ class Gallery extends Model
         return $this->belongsTo(Team::class);
     }
 
-    protected static function booted()
-    {
-        static::addGlobalScope(new CurrentTeam);
-    }
+    // protected static function booted()
+    // {
+    //     static::addGlobalScope(new CurrentTeam);
+    // }
 }

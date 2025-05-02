@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Scopes\CurrentTeam;
+use App\Scopes\WorkTeam;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -31,7 +31,10 @@ class Score extends Model
     {
         return $this->belongsTo(Work::class);
     }
-
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new WorkTeam());
+    }
     public static function boot()
     {
         parent::boot();

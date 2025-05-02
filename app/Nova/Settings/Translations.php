@@ -106,7 +106,7 @@ return array_map(function ($setting) {
     ['profile', 'Profile Page', Text::class],
     ['profile_settings', 'Profile Settings', Text::class],
     ['profile_logout', 'Profile Logout', Text::class],
-    ['profile_works', 'Profile Works', Text::class],
+    ['profile_works', 'Profile Art Works', Text::class],
     ['profile_diploma', 'Profile Diploma', Text::class],
     ['profile_diploma_text', 'Profile Diploma Text', Text::class],
     ['profile_details', 'Profile Details', Text::class],
@@ -115,4 +115,5 @@ return array_map(function ($setting) {
     ['facebook_link', 'Facebook Link', URL::class],
     ['instagram_link', 'Instagram Link', URL::class],
     ['youtube_link', 'Youtube Link', URL::class],
+    ['further_communications','Further Communications Message', Text::class],
 ]);

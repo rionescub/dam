@@ -37,6 +37,14 @@ class Gallery extends Resource
         'contestant',
     ];
 
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        if ($request->user()->is_super_admin()) {
+            return $query;
+        }
+        return $query->where('team_id', $request->user()->current_team_id);
+    }
+
     /**
      * Get the fields displayed by the resource.
      *

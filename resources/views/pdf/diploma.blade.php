@@ -161,89 +161,89 @@
 </head>
 
 <body>
-    <div class="background"></div>
-    <div class="diploma-container">
-        <div class="diploma-left">
-            <div class="logo">
-                <img src="{{ asset('dam_logo.png') }}" class="mx-auto" alt="DAM ">
-                <img src="{{ asset('ipcdr.png') }}" class="mx-auto" alt="ICPDR IKSD">
-                <img src="{{ asset('erste.svg') }}" class="mx-auto" alt="Erste">
-                <img src="{{ asset('mmap.png') }}" class="mx-auto" alt="Ministerul Apelor">
-                <img src="{{ asset('gwp.jpg') }}" class="mx-auto" alt="GWP ROmania">
-            </div>
+<div class="background"></div>
+<div class="diploma-container">
+    <div class="diploma-left">
+        <div class="logo">
+            <img src="{{ asset('dam_logo.png') }}" class="mx-auto" alt="DAM ">
+            <img src="{{ asset('ipcdr.png') }}" class="mx-auto" alt="ICPDR IKSD">
+            <img src="{{ asset('erste.svg') }}" class="mx-auto" alt="Erste">
+            <img src="{{ asset('mmap.png') }}" class="mx-auto" alt="Ministerul Apelor">
+            <img src="{{ asset('gwp.jpg') }}" class="mx-auto" alt="GWP ROmania">
+        </div>
+    </div>
+
+    <!-- Right Section -->
+
+    <div class="diploma-right">
+        <div class="title">
+            Diplomă <br> de participare</span>
         </div>
 
-        <!-- Right Section -->
+        <div class="subtitle">
+            <span class="">Se acordă elevului/elevei</span><br />
+            <span class=""><strong>{{ $diploma->work->details->full_name }}</strong></span>
+        </div>
 
-        <div class="diploma-right">
-            <div class="title">
-                Diplomă <br> de participare</span>
-            </div>
-
-            <div class="subtitle">
-                <span class="">Se acordă elevului/elevei</span><br />
-                <span class=""><strong>{{ $diploma->work->details->full_name }}</strong></span>
-            </div>
-
-            <div class="details">
-                de la <span class="font-bold underline"><strong>{{ $diploma->work->details->school }}</strong>
+        <div class="details">
+            de la <span class="font-bold underline"><strong>{{ $diploma->work->details->school }}</strong>
                 </span>
-                <br />coordonat/ă de prof. <span class="font-bold"><strong>
+            <br />coordonat/ă de prof. <span class="font-bold"><strong>
                         {{ $diploma->work->details->mentor }}</strong> </span>
-                <br />pentru participarea la concursul <strong> "{{ $diploma->contest->name }}"</strong> - faza
-                națională.</span>
-                @php
-                    $types = [
-                        'img' => 'Imagine',
-                        'artwork' => 'Lucrare de artă',
-                        'video' => 'video',
-                    ];
-                    if ($diploma->work->award_rank && in_array($diploma->work->award_rank, [1, 2, 3])) {
-                        echo '<br /><strong> Premiul ' .
-                            $diploma->work->award_rank .
-                            '</strong>  la categoria <span class="font-bold">' .
-                            $diploma->work->details->age_group .
-                            ' ani </span>';
-                    } elseif (in_array($diploma->work->rank, [1, 2, 3])) {
-                        echo '<br />Premiul ' .
-                            $diploma->work->rank .
-                            ' la categoria <span class="font-bold">' .
-                            $diploma->work->details->age_group .
-                            ' ani </span>, subcategorie <span class="font-bold">' .
-                            $types[$diploma->work->details->type] .
-                            ' </span>';
-                    }
-                @endphp
-                <br /><br /><br /><span class="font-bold text-blue-900 text-2xl italic mt-10">Asociația Parteneriatul
+            <br />pentru participarea la concursul <strong> "{{ $diploma->contest->name }}"</strong> - faza
+            națională.</span>
+            @php
+                $types = [
+                    'img' => 'Imagine',
+                    'artwork' => 'Lucrare de artă',
+                    'video' => 'video',
+                ];
+                if ($diploma->work->award_rank && in_array($diploma->work->award_rank, [1, 2, 3])) {
+                    echo '<br /><strong> Premiul ' .
+                        $diploma->work->award_rank .
+                        '</strong>  la categoria <span class="font-bold">' .
+                        $diploma->work->details->age_group .
+                        ' ani </span>';
+                } elseif (in_array($diploma->work->rank, [1, 2, 3])) {
+                    echo '<br />Premiul ' .
+                        $diploma->work->rank .
+                        ' la categoria <span class="font-bold">' .
+                        $diploma->work->details->age_group .
+                        ' ani </span>, subcategorie <span class="font-bold">' .
+                        $types[$diploma->work->details->type] .
+                        ' </span>';
+                }
+            @endphp
+            <br /><br /><br /><span class="font-bold text-blue-900 text-2xl italic mt-10">Asociația Parteneriatul
                     Global al Apei
                     din
                     România </span>
 
 
-            </div>
+        </div>
 
-            <!-- Signature Section -->
-            <div class="signature-section">
-                <img src="{{ asset('signature.png') }}" class="mx-auto" alt="Signature">
-                <div class="signature">Procop Ionuț</div>
-                <div class="position">Președinte</div>
-            </div>
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <img src="{{ asset('signature.png') }}" class="mx-auto" alt="Signature">
+            <div class="signature">Procop Ionuț</div>
+            <div class="position">Președinte</div>
+        </div>
 
-            <div class="boat">
-                <img src="{{ asset('boat.png') }}" alt="Boat">
-            </div>
+        <div class="boat">
+            <img src="{{ asset('boat.png') }}" alt="Boat">
+        </div>
 
-            <!-- Participant Info Bottom Right -->
-            <div class="footer">
-                <div>
-                    <span class="font-medium">Nume Lucrare</span>
-                    <br />
-                    <span class="underline">{{ $diploma->work->name }}</span>
+        <!-- Participant Info Bottom Right -->
+        <div class="footer">
+            <div>
+                <span class="font-medium">Nume Lucrare</span>
+                <br />
+                <span class="underline">{{ $diploma->work->name }}</span>
 
-                </div>
             </div>
         </div>
     </div>
+</div>
 
 </body>
 

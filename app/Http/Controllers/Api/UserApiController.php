@@ -79,7 +79,7 @@ class UserApiController extends Controller
     // View user profile
     public function viewUser()
     {
-        $team = Team::where('team', request('team'))->first();
+        $team = Team::where('link', request('team'))->first();
         $user = Auth::user();
         if ($user->current_team_id !== $team->id) {
             return response()->json(['error' => 'User not found'], 404);

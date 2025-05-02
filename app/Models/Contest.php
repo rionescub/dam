@@ -22,6 +22,7 @@ class Contest extends Model
         'team_id', // Ensure this is fillable so the correct team can be assigned
     ];
 
+
     protected function casts(): array
     {
         return [

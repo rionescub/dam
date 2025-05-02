@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Scopes\CurrentTeam;
+use App\Scopes\WorkTeam;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -25,7 +25,10 @@ class WorkDetails extends Model
         'age_group', // Age group (e.g., 6-11, 14-18)
         'type', // Type of artwork
     ];
-
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new WorkTeam());
+    }
     public function work()
     {
         return $this->belongsTo(Work::class);

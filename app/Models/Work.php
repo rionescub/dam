@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Scopes\CurrentTeam;
+use App\Scopes\ContestTeam;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,7 +25,10 @@ class Work extends Model
         'award_rank',
         'view_on_front'
     ];
-
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new ContestTeam());
+    }
     public function contest()
     {
         return $this->belongsTo(Contest::class);

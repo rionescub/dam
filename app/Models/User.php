@@ -98,16 +98,16 @@ class User extends Authenticatable
 
     public function is_super_admin()
     {
-        return $this->role === 'superadmin';
+        return $this->role == 'superadmin';
     }
 
     public function is_admin()
     {
-        return $this->role === 'admin';
+        return $this->role == 'admin' || $this->role == 'superadmin';
     }
 
     public function is_organizer()
     {
-        return $this->role === 'organizer' || $this->role === 'admin';
+        return $this->role == 'organizer' || $this->role == 'admin' || $this->role == 'superadmin';
     }
 }
