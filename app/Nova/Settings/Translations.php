@@ -61,6 +61,7 @@ return array_map(function ($setting) {
     ['register_account_created', 'Register Account Created Message', Text::class],
     ['register_already_registered_message', 'Register Already Registered Message', Text::class],
     ['register_verification_email_sent', 'Password Mismatch Error', Text::class],
+    ['register_further_communications','Further Communications Message', Text::class],
     ['verify_email_form_title', 'Verify Email Form Title', Text::class],
     ['verify_email_success_message', 'Verify Email Success Message', Text::class],
     ['verify_email_loading_message', 'Verify Email Loading Message', Text::class],
@@ -115,5 +116,4 @@ return array_map(function ($setting) {
     ['facebook_link', 'Facebook Link', URL::class],
     ['instagram_link', 'Instagram Link', URL::class],
     ['youtube_link', 'Youtube Link', URL::class],
-    ['register_further_communications','Further Communications Message', Text::class],
 ]);
