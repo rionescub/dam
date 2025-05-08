@@ -141,7 +141,7 @@ class WorkApiController extends Controller
             'school' => 'nullable|string|max:255',
             'year' => 'required|string|max:20',
             'mentor' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|numeric|max:20',
         ]);
 
         $user = Auth::user();

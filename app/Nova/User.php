@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use Carbon\Carbon;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Date;
@@ -107,11 +108,16 @@ class User extends Resource
 
 
             DateTime::make('Email Verified At', 'email_verified_at')
-                ->onlyOnDetail()
-                ->hideFromDetail()
-                ->rules('required')
-                ->default(now())
-                ->creationRules('after_or_equal:now'),
+                ->hideFromIndex()
+                ->hideWhenUpdating()
+                ->onlyOnForms()
+                ->default(fn () => Carbon::now())
+                ->fillUsing(function (NovaRequest $request, $model, $attribute) {
+                    $model->{$attribute} = $request->exists($attribute)
+                        ? $request->{$attribute}
+                        : Carbon::now();
+                })
+                ->rules('required', 'date'),
         ];
     }
 

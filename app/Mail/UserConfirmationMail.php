@@ -27,6 +27,8 @@ class UserConfirmationMail extends Mailable
             1 => 'emails.user_confirmation_ro',
             2 => 'emails.user_confirmation_hu',
             3 => 'emails.user_confirmation_sl',
+            4 => 'emails.user_confirmation_au',
+            5 => 'emails.user_confirmation_ua',
             default => 'emails.user_confirmation',
         };
 

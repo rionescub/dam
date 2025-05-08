@@ -104,9 +104,17 @@ class Work extends Resource
             Text::make('Video URL')
                 ->nullable(),
 
-            File::make('File', 'file_path')
+            Image::make('Artwork Image', 'file_path')
                 ->disk('public')
-                ->nullable(), // Field to handle artwork uploads
+                ->thumbnail(fn ($value, $disk) => $value
+                    ? Storage::disk($disk)->url($value)
+                    : null
+                )
+                ->preview(fn ($value, $disk) => $value
+                    ? Storage::disk($disk)->url($value)
+                    : null
+                )
+                ->hideFromIndex(),
 
             Number::make('Rank')
                 ->min(1)

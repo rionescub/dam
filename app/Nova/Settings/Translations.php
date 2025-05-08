@@ -99,6 +99,7 @@ return array_map(function ($setting) {
     ['upload_artwork', 'Upload Artwork', Text::class],
     ['artwork_photo', 'Artwork Photo', Text::class],
     ['artwork_url', 'Video URL', Text::class],
+    ['video_text', 'Explanation for Video URL', Text::class],
     ['submit', 'Submit Button Text', Text::class],
     ['no_contest', 'No Contest Message', Text::class],
     ['artwork_submitted_successfully', 'Artwork Submitted Successfully Message', Text::class],

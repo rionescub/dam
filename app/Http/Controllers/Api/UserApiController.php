@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Team;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Mail\PasswordResetMail;
@@ -34,17 +35,28 @@ class UserApiController extends Controller
         }
 
         if (!Auth::attempt($credentials)) {
-            return response()->json(['error' => NovaSettings::getSetting('login_wrong_credentials_message')], 401);
+            $errorMessage = DB::table('nova_settings')
+                ->where('team_id', $team->id)
+                ->where('key', 'login_wrong_credentials_message')
+                ->value('value');
+            return response()->json(['error' => $errorMessage], 401);
         }
 
         if (Auth::user()->email_verified_at === null) {
-            return response()->json(['error' => NovaSettings::getSetting('login_verify_email_message')], 401);
+            $verifyMessage = DB::table('nova_settings')
+                ->where('team_id', $team->id)
+                ->where('key', 'login_verify_email_message')
+                ->value('value');
+            return response()->json(['error' => $verifyMessage], 401);
         }
 
         if (Auth::user()->current_team_id !== $team->id) {
-            return response()->json(['error' => NovaSettings::getSetting('login_wrong_credentials_message')], 401);
+            $errorMessage = DB::table('nova_settings')
+                ->where('team_id', $team->id)
+                ->where('key', 'login_wrong_credentials_message')
+                ->value('value');
+            return response()->json(['error' => $errorMessage], 401);
         }
-
         $user = Auth::user();
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -138,7 +150,7 @@ class UserApiController extends Controller
             'recaptcha' => 'required|string',
             'confirm_password' => 'required|string|min:8',
             'team_slug' => 'required|exists:teams,link',
-            'further_communications' => 'sometimes|boolean',
+            'further_communications' => 'boolean',
         ]);
 
         if ($validator->fails()) {
