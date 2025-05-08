@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Nova\Resource;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Image;
