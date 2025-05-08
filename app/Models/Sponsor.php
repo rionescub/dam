@@ -26,6 +26,11 @@ class Sponsor extends Model
         return $this->belongsToMany(Contest::class);
     }
 
+    protected static function booted()
+    {
+        static::addGlobalScope(new CurrentTeam);
+    }
+
     public function team()
     {
         return $this->belongsTo(Team::class);

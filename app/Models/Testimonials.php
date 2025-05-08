@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Scopes\CurrentTeam;
 
 class Testimonials extends Model
 {
@@ -22,6 +23,11 @@ class Testimonials extends Model
         'location' => 'required|string|max:255',
         'rating' => 'required|integer|between:1,5'
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new CurrentTeam);
+    }
 
     public function team()
     {
