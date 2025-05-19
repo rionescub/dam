@@ -23,6 +23,8 @@ return array_map(function ($setting) {
     ['register_page_name', 'Register Page Name', Text::class],
     ['login_page_name', 'Login Page Name', Text::class],
     ['forgot_password_page_name', 'Forgot Password Page Name', Text::class],
+    ['reset_link_sent', 'Reset Link Sent Message', Text::class],
+    ['reset_link_failed', 'Reset Link Sent Message', Text::class],
     ['terms_page_name', 'Terms and Conditions Page Name', Text::class],
     ['privacy_page_name', 'Privacy Policy Page Name', Text::class],
     ['contact_us_page_name', 'Contact Us Page Name', Text::class],
