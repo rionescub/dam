@@ -52,7 +52,6 @@ Route::middleware('api')->group(function () {
         Route::put('/user', [UserApiController::class, 'updateUser']);
         Route::delete('/user', [UserApiController::class, 'deleteUser']);
         Route::get('/user/artworks', [WorkApiController::class, 'getUserArtworks']);
-        Route::post('forgot-password', [UserApiController::class, 'sendResetLinkEmail']);
 
 
         //Route::post('/user/notifications', [UserApiController::class, 'setNotifications']);
@@ -83,6 +82,8 @@ Route::middleware('api')->group(function () {
 
     // Sponsor routes
     Route::get('/sponsors', [SponsorsApiController::class, 'index']);
+
+    Route::post('forgot-password', [UserApiController::class, 'sendResetLinkEmail']);
 
     // Testimonials routes
     Route::get('/testimonials', [TestimonialsApiController::class, 'index']);
