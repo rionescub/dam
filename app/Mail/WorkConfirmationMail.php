@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class UserConfirmationMail extends Mailable
+class WorkConfirmationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -18,26 +18,24 @@ class UserConfirmationMail extends Mailable
     public function __construct($user, $verificationUrl)
     {
         $this->user = $user;
-        $this->verificationUrl = $verificationUrl;
     }
 
     public function build()
     {
         $view = match ($this->user->current_team_id) {
-        1 => 'emails.user_confirmation_ro',
-            2 => 'emails.user_confirmation_hu',
-            3 => 'emails.user_confirmation_sl',
-            4 => 'emails.user_confirmation_au',
-            5 => 'emails.user_confirmation_ua',
-            6 => 'emails.user_confirmation_cz',
-            default => 'emails.user_confirmation',
+            1 => 'emails.work_confirmation_ro',
+            2 => 'emails.work_confirmation_hu',
+            3 => 'emails.work_confirmation_sl',
+            4 => 'emails.work_confirmation_au',
+            5 => 'emails.work_confirmation_ua',
+            6 => 'emails.work_confirmation_cz',
+            default => 'emails.work_confirmation',
         };
 
         return $this->view($view)
             ->with([
                 'user' => $this->user,
-                'verificationUrl' => $this->verificationUrl,
             ])
-            ->subject('Confirm Your Email Address');
+            ->subject('Bestätigung deiner Einreichung beim Danube Art Master');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Mail\WorkConfirmationMail;
 use Carbon\Carbon;
 use App\Models\Team;
 use App\Models\Work;
@@ -126,9 +127,9 @@ class WorkApiController extends Controller
         // Validate request data
         $request->validate([
             'title' => 'required|string|max:255',
-            'title_en' => 'required|string|max:255',
-            'description_en' => 'required|string',
-            'description' => 'nullable|string',
+            'title_en' => 'nullable|string|max:255',
+            'description_en' => 'nullable|string',
+            'description' => 'required|string',
             'contest_id' => 'required|exists:contests,id',
             'file' => $request->hasFile('file') ? 'file|mimes:jpg,jpeg,png,pdf|max:2048' : 'nullable',
             'video_url' => 'nullable|url',
@@ -203,6 +204,11 @@ class WorkApiController extends Controller
         $workDetails->phone = $request->phone;
 
         $workDetails->save();
+
+        // Send an email to the user
+        if ($user->current_team_id = 4) {
+            Mail::to($user->email)->send(new WorkConfirmationMail($work));
+        }
 
         return response()->json(['message' => 'Artwork submitted successfully', 'work' => $work], 201);
     }

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Herzlichen Glückwunsch! Du hast dich erfolgreich für den Wettbewerb „Meister der Donaukunst 202Y“ registriert!</title>
+</head>
+
+<body>
+<p>Guten Tag, $user!</p>
+<p>Vielen Dank für deine Einreichung. Wir freuen uns, dass du beim Danube Art Master mitmachst! Mit freundlichen Grüßen, Das Danube Art Master Team</p>
+
+<p>Viel Erfolg</p>
+<p>Mit freundlichen Grüßen,</p>
+<p>Die Organisator:innen</p>
+</body>
+
+</html>
