@@ -44,6 +44,9 @@ Route::middleware('api')->group(function () {
 
     Route::get('/teams/{link}', [TeamApiController::class, 'show']);
 
+    Route::post('/reset-password', [UserApiController::class, 'resetPassword'])->name('password.update');
+
+
 
     // User routes
     Route::group(['middleware' => 'auth:sanctum'], function () {

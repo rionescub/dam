@@ -57,9 +57,9 @@ class UserApiController extends Controller
                 ->value('value');
             return response()->json(['error' => $errorMessage], 401);
         }
+
         $user = Auth::user();
         $token = $user->createToken('auth_token')->plainTextToken;
-
         return response()->json([
             'user' => [
                 'first_name' => $user->first_name,
@@ -241,19 +241,43 @@ class UserApiController extends Controller
         $request->validate([
             'email' => 'required|email|exists:users,email',
         ]);
-
         // Find the user
         $user = User::where('email', $request->email)->first();
-
+        $team_id = $user->current_team_id;
+        $team_slug = Team::where('id', $team_id)->first()->link;
         // Generate the password reset token
         $token = Password::createToken($user);
 
         // Create the reset URL
-        $resetUrl = url("/reset-password?token={$token}&email={$user->email}");
+        $resetUrl = rtrim($request->header('origin') ?? $request->header('referer') ?? config('app.url'), '/') . "/{$team_slug}/reset-password?token={$token}&email={$user->email}";
 
         // Send the reset email
         Mail::to($user->email)->send(new PasswordResetMail($user, $resetUrl));
 
         return response()->json(['message' => 'Password reset link sent successfully.'], 200);
     }
+
+    // Handle password reset submission
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'token' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->password = Hash::make($password);
+                $user->save();
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return response()->json(['message' => 'Password reset successfully']);
+        }
+
+        return response()->json(['error' => 'Invalid token or expired link'], 400);
+    }
+
 }
