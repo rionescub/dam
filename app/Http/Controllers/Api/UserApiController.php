@@ -261,15 +261,20 @@ class UserApiController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:users,email',
+            'email' => 'required|email',
             'token' => 'required|string',
             'password' => 'required|string|min:8|confirmed',
         ]);
+
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
-                $user->password = Hash::make($password);
-                $user->save();
+                $user->forceFill([
+                    'password' => Hash::make($password),
+                    'remember_token' => Str::random(60),
+                ])->save();
+
+                $user->tokens()->delete();
             }
         );
 
@@ -277,7 +282,6 @@ class UserApiController extends Controller
             return response()->json(['message' => 'Password reset successfully']);
         }
 
-        return response()->json(['error' => 'Invalid token or expired link'], 400);
+        return response()->json(['error' => __($status)], 400);
     }
-
 }
