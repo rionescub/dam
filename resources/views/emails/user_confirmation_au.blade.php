@@ -6,7 +6,7 @@
 </head>
 
 <body>
-<p>Guten Tag, {{$user}}</p>
+<p>Guten Tag, {{ $user->first_name }}!</p>
 <p>Herzlichen Glückwunsch! Du hast dich erfolgreich für den Wettbewerb „Danube Art Master 2025“ registriert!</p>
 <p>Um deine E-Mail-Adresse zu bestätigen, folge bitte dem untenstehenden Link:</p>
 <a href="{{ $verificationUrl }}">E-Mail bestätigen</a>

@@ -6,7 +6,7 @@
 </head>
 
 <body>
-<p>Guten Tag, $user!</p>
+<p>Guten Tag, {{ $user->first_name }}!</p>
 <p>Vielen Dank für deine Einreichung. Wir freuen uns, dass du beim Danube Art Master mitmachst! Mit freundlichen Grüßen, Das Danube Art Master Team</p>
 
 <p>Viel Erfolg</p>
