@@ -7,9 +7,9 @@
 
 <body>
 <p>Guten Tag, {{ $user->first_name }}!</p>
-<p>Vielen Dank für deine Einreichung. Wir freuen uns, dass du beim Danube Art Master mitmachst! Mit freundlichen Grüßen, Das Danube Art Master Team</p>
+<p>Vielen Dank für deine Einreichung. Wir freuen uns, dass du beim Danube Art Master mitmachst!</p>
 
-<p>Viel Erfolg</p>
+<p>Viel Erfolg.</p>
 <p>Mit freundlichen Grüßen,</p>
 <p>Die Organisator:innen</p>
 </body>

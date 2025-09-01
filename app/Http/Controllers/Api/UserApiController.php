@@ -50,7 +50,7 @@ class UserApiController extends Controller
             return response()->json(['error' => $verifyMessage], 401);
         }
 
-        if (Auth::user()->current_team_id !== $team->id) {
+        if (Auth::user()->current_team_id != $team->id) {
             $errorMessage = DB::table('nova_settings')
                 ->where('team_id', $team->id)
                 ->where('key', 'login_wrong_credentials_message')
@@ -85,6 +85,12 @@ class UserApiController extends Controller
     // Fetch authenticated user data
     public function user(Request $request)
     {
+        $team = Team::where('link', $request->query('team'))->first();
+
+        if (! $team || $request->user()->current_team_id != $team->id) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
         return response()->json($request->user()->load('currentTeam'));
     }
 
@@ -158,18 +164,18 @@ class UserApiController extends Controller
         }
 
         // Verify reCAPTCHA if environment is not local
-        if (env('APP_ENV') !== 'local') {
-            $recaptchaResponse = $request->input('recaptcha');
-            $recaptchaSecret = env('RECAPTCHA_SECRET_KEY');
-            $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                'secret' => $recaptchaSecret,
-                'response' => $recaptchaResponse,
-            ]);
+        // if (env('APP_ENV') !== 'local') {
+        //     $recaptchaResponse = $request->input('recaptcha');
+        //     $recaptchaSecret = env('RECAPTCHA_SECRET_KEY');
+        //     $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+        //         'secret' => $recaptchaSecret,
+        //         'response' => $recaptchaResponse,
+        //     ]);
 
-            if (!$response->json('success')) {
-                return response()->json(['error' => 'reCAPTCHA verification failed'], 422);
-            }
-        }
+        //     if (!$response->json('success')) {
+        //         return response()->json(['error' => 'reCAPTCHA verification failed'], 422);
+        //     }
+        // }
         $current_team = Team::where('link', $request->team_slug)->first();
         // Create user with default role as contestant and email verification token
         $user = User::create([

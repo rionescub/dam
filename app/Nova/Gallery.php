@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -69,16 +70,20 @@ class Gallery extends Resource
                 ->sortable()
                 ->rules('required')
                 ->default(now()->year),
-            BelongsTo::make('Team')
-                ->display('name')
-                ->sortable()
-                ->rules('required')
-                ->default(function (Request $request) {
-                    return $request->user()->current_team_id;
+            Select::make('Team', 'team_id')
+                ->options(function () use ($request) {
+                    if ($request->user()->is_super_admin()) {
+                        return \App\Models\Team::all()->pluck('name', 'id');
+                    } else {
+                        return \App\Models\Team::where('id', $request->user()->current_team_id)->pluck('name', 'id');
+                    }
                 })
-                ->hide(function (Request $request) {
-                    return !$request->user()->is_super_admin();
-                }),
+                ->rules('required')
+                ->default(auth()->user()->current_team_id)
+                ->displayUsing(function ($team) {
+                    return \App\Models\Team::find($team)->name;
+                })
+                ->hideFromIndex(),
         ];
     }
 

@@ -24,12 +24,14 @@ class UserConfirmationMail extends Mailable
     public function build()
     {
         $view = match ($this->user->current_team_id) {
-        1 => 'emails.user_confirmation_ro',
+            1 => 'emails.user_confirmation_ro',
             2 => 'emails.user_confirmation_hu',
             3 => 'emails.user_confirmation_sl',
             4 => 'emails.user_confirmation_au',
             5 => 'emails.user_confirmation_ua',
             6 => 'emails.user_confirmation_cz',
+            7 => 'emails.user_confirmation_rs',
+            8 => 'emails.user_confirmation_sk',
             default => 'emails.user_confirmation',
         };
 

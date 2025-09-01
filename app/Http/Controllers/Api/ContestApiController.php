@@ -36,6 +36,8 @@ class ContestApiController extends Controller
     }
 
     public function getContest (Request $request) {
+        dd('here');
+         // Get the current user's team ID
         $user = $request->user();
         $teamId = $user->current_team_id;
         $contest = Contest::where('team_id', $teamId)

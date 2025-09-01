@@ -3,16 +3,15 @@
 namespace App\Nova;
 
 use Carbon\Carbon;
-use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Date;
-use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Select;
 use Illuminate\Validation\Rules;
-use Laravel\Nova\Fields\DateTime;
-use Laravel\Nova\Fields\Gravatar;
-use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Password;
+use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Actions\ExportAsCsv;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -40,8 +39,10 @@ class User extends Resource
         if ($request->user()->is_super_admin()) {
             return $query;
         }
+
         return $query->where('current_team_id', $request->user()->current_team_id);
     }
+
     /**
      * The columns that should be searched.
      *
@@ -64,48 +65,64 @@ class User extends Resource
     {
         return [
             ID::make()->sortable(),
-            Text::make('First Name')->sortable()->rules('required', 'max:255'),
-            Text::make('Last Name')->sortable()->rules('required', 'max:255'),
-            Select::make('Role')->options([
-                'admin' => 'Admin',
-                'organizer' => 'Organizer',
-                'judge' => 'Judge',
-                'teacher' => 'Teacher',
-                'contestant' => 'Contestant',
-                'user' => 'User',
-            ])->displayUsingLabels()->sortable()->rules('required'),
 
-            //  Date::make('Date of Birth')->rules('required'),
+            Text::make('First Name')
+                ->sortable()
+                ->rules('required', 'max:255'),
 
-            Text::make('Email')->sortable()->rules('required', 'email', 'max:254')
+            Text::make('Last Name')
+                ->sortable()
+                ->rules('required', 'max:255'),
+
+            Select::make('Role')
+                ->options([
+                    'admin'      => 'Admin',
+                    'organizer'  => 'Organizer',
+                    'judge'      => 'Judge',
+                    'teacher'    => 'Teacher',
+                    'contestant' => 'Contestant',
+                    'user'       => 'User',
+                ])
+                ->displayUsingLabels()
+                ->sortable()
+                ->rules('required'),
+
+            Text::make('Email')
+                ->sortable()
+                ->rules('required', 'email', 'max:254')
                 ->creationRules('unique:users,email')
                 ->updateRules('unique:users,email,{{resourceId}}'),
 
             BelongsTo::make('Current Team', 'currentTeam', Team::class)
                 ->nullable()
-                ->displayUsing(function ($team) {
-                    return $team->name;
-                })
+                ->displayUsing(fn ($team) => $team->name)
                 ->hideFromIndex()
-                ->hideFromDetail(function (Request $request) {
-                    return !$request->user()->is_super_admin();
+                ->relatableQueryUsing(function (NovaRequest $request, $query) {
+                    if ($request->user()->is_super_admin()) {
+                        return $query;
+                    }
+
+                    return $query->where('id', $request->user()->current_team_id);
                 })
                 ->fillUsing(function (NovaRequest $request, $model, $attribute, $requestAttribute) {
-                    if (!$request->user()->is_super_admin()) {
+                    if (! $request->user()->is_super_admin()) {
                         $model->current_team_id = $request->user()->current_team_id;
                     } else {
                         $model->$attribute = $request->$requestAttribute;
                     }
                 })
-                ->default(function (Request $request) {
-                    return $request->user()->is_super_admin() ? null : $request->user()->current_team_id;
-                }),
+                ->default(fn (Request $request) => $request->user()->is_super_admin()
+                    ? null
+                    : $request->user()->current_team_id
+                ),
 
-
-            Password::make('Password')->onlyOnForms()
+            Password::make('Password')
+                ->onlyOnForms()
                 ->creationRules('required', Rules\Password::defaults())
                 ->updateRules('nullable', Rules\Password::defaults()),
 
+            Boolean::make('Further Communications')
+                ->sortable(),
 
             DateTime::make('Email Verified At', 'email_verified_at')
                 ->hideFromIndex()
@@ -163,19 +180,16 @@ class User extends Resource
     public function actions(NovaRequest $request)
     {
         return [
-            ExportAsCsv::make()->withFormat(
-                function ($model) {
-                    return [
-                        'id' => $model->id,
-                        'first_name' => $model->first_name,
-                        'last_name' => $model->last_name,
-                        'email' => $model->email,
-                        'role' => $model->role,
-                        'date_of_birth' => $model->date_of_birth,
-                    ];
-                }
-            ),
-
+            ExportAsCsv::make()->withFormat(function ($model) {
+                return [
+                    'id'            => $model->id,
+                    'first_name'    => $model->first_name,
+                    'last_name'     => $model->last_name,
+                    'email'         => $model->email,
+                    'role'          => $model->role,
+                    'date_of_birth' => $model->date_of_birth,
+                ];
+            }),
         ];
     }
 }

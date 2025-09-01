@@ -6,17 +6,17 @@
 </head>
 
 <body>
-    <p>Bună ziua, {{ $user->first_name }}!</p>
-    <p>Felicitări! Te-ai înregistrat cu succes pentru competiția „Artistul Dunării 2024”!</p>
-    <p>Îți mulțumim pentru interesul acordat și pentru dorința de a contribui la protecția mediului prin creațiile tale
-        artistice. Așteptăm cu nerăbdare să vedem cum Dunărea și afluenții săi te vor inspira.</p>
-    <p>Pentru a confirma adresa de email, te rugam sa urmezi linkul de mai jos:</p>
-    <a href="{{ $verificationUrl }}">Confirma Email</a>
+<p>Bună ziua, {{ $user->first_name }}!</p>
+<p>Felicitări! Te-ai înregistrat cu succes pentru competiția „Artistul Dunării 2025”!</p>
+<p>Îți mulțumim pentru interesul acordat și pentru dorința de a contribui la protecția mediului prin creațiile tale
+    artistice. Așteptăm cu nerăbdare să vedem cum Dunărea și afluenții săi te vor inspira.</p>
+<p>Pentru a confirma adresa de email, te rugam sa urmezi linkul de mai jos:</p>
+<a href="{{ $verificationUrl }}">Confirma Email</a>
 </body>
 <p> Ce urmează?</p>
 <ol>
     <li>Pregătește-ți lucrarea: Creează o lucrare originală inspirată de Dunăre (artă, fotografie sau video).</li>
-    <li>Încărcarea lucrării: Poți încărca lucrarea ta pe platformă până pe 7 noiembrie 2024, ora 23:00.</li>
+    <li>Încărcarea lucrării: Poți încărca lucrarea ta pe platformă până pe 7 noiembrie 2025, ora 23:00.</li>
     <li>Verifică regulamentul: Asigură-te că ai citit regulamentul oficial pentru a îndeplini toate cerințele
         competiției.</li>
 </ol>

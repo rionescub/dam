@@ -13,9 +13,8 @@ class WorkConfirmationMail extends Mailable
     use Queueable, SerializesModels;
 
     public $user;
-    public $verificationUrl;
 
-    public function __construct($user, $verificationUrl)
+    public function __construct($user)
     {
         $this->user = $user;
     }
@@ -29,13 +28,15 @@ class WorkConfirmationMail extends Mailable
             4 => 'emails.work_confirmation_au',
             5 => 'emails.work_confirmation_ua',
             6 => 'emails.work_confirmation_cz',
-            default => 'emails.work_confirmation',
+            7 => 'emails.work_confirmation_rs',
+            8 => 'emails.work_confirmation_sk',
+            default => 'emails.work_confirmation_en',
         };
 
         return $this->view($view)
             ->with([
                 'user' => $this->user,
             ])
-            ->subject('Bestätigung deiner Einreichung beim Danube Art Master');
+            ->subject('Best채tigung deiner Einreichung beim Danube Art Master');
     }
 }

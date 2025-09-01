@@ -11,6 +11,7 @@ use App\Models\WorkDetails;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class WorkApiController extends Controller
@@ -131,7 +132,7 @@ class WorkApiController extends Controller
             'description_en' => 'nullable|string',
             'description' => 'required|string',
             'contest_id' => 'required|exists:contests,id',
-            'file' => $request->hasFile('file') ? 'file|mimes:jpg,jpeg,png,pdf|max:2048' : 'nullable',
+            'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf,webp|max:16384',
             'video_url' => 'nullable|url',
             'age_group' => 'required|string|max:20',
             'full_name' => 'required|string|max:255',
@@ -142,7 +143,7 @@ class WorkApiController extends Controller
             'school' => 'nullable|string|max:255',
             'year' => 'required|string|max:20',
             'mentor' => 'nullable|string|max:255',
-            'phone' => 'nullable|numeric|max:20',
+            'phone' => 'nullable|numeric|digits_between:8,15',
         ]);
 
         $user = Auth::user();
@@ -206,7 +207,7 @@ class WorkApiController extends Controller
         $workDetails->save();
 
         // Send an email to the user
-        if ($user->current_team_id = 4) {
+        if ($user->current_team_id == 4) {
             Mail::to($user->email)->send(new WorkConfirmationMail($work));
         }
 
@@ -225,7 +226,7 @@ class WorkApiController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'file' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf,webp|max:16384',
             'video_url' => [
                 'nullable',
                 'regex:/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be|vimeo\.com|dropbox\.com|drive\.google\.com)\/.+$/'
