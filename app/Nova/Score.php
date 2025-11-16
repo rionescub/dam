@@ -4,8 +4,11 @@ namespace App\Nova;
 
 use App\Nova\Resource;
 use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Score extends Resource
@@ -123,6 +126,28 @@ class Score extends Resource
                 ->max(30)
                 ->readonly()
                 ->sortable(),
+
+            Text::make('Contest', function () {
+                return optional($this->work->contest)->name;
+            })
+                ->onlyOnIndex()
+                ->sortable(),
+
+            Text::make('Judge', function () {
+                return trim(sprintf('%s %s', optional($this->user)->first_name ?? '', optional($this->user)->last_name ?? ''));
+            })
+                ->onlyOnIndex()
+                ->sortable(),
+
+            Boolean::make('Finalized', 'is_finalized')
+                ->sortable(),
+
+            Date::make('Date', 'created_at')
+                ->onlyOnIndex()
+                ->sortable(),
+
+
+
         ];
     }
 

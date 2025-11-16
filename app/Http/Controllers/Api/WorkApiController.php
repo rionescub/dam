@@ -34,9 +34,12 @@ class WorkApiController extends Controller
         } elseif ($user->role === 'judge') {
 
             $contests = Contest::where('team_id', $user->current_team_id)
-                ->where('end_date', '<=', Carbon::now())
-                ->where('jury_date', '<=', Carbon::now())
-                ->first();
+                ->where('end_date', '<', Carbon::now())
+                ->where('ceremony_date', '>=', Carbon::now())
+                ->firstOrFail();
+
+
+
             $works = Work::where('contest_id', $contests->id)
                 ->with('details')
                 ->with(['scores' => function ($query) use ($user) {

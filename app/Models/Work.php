@@ -25,10 +25,20 @@ class Work extends Model
         'award_rank',
         'view_on_front'
     ];
+
+    /**
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'rank' => 'integer',
+        'total_score' => 'float',
+    ];
+
     protected static function booted(): void
     {
         static::addGlobalScope(new ContestTeam());
     }
+
     public function contest()
     {
         return $this->belongsTo(Contest::class);

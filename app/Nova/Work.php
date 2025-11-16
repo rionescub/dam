@@ -4,16 +4,15 @@ namespace App\Nova;
 
 use App\Nova\Resource;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Nova\Actions\ExportAsCsv;
+use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\Textarea;
-use Laravel\Nova\Fields\BelongsTo;
-use Laravel\Nova\Fields\File;
-use Laravel\Nova\Fields\HasMany;
-use Laravel\Nova\Actions\ExportAsCsv;
+use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Work extends Resource
@@ -23,11 +22,13 @@ class Work extends Resource
      *
      * @var class-string<\App\Models\Work>
      */
+
     public static function indexQuery(NovaRequest $request, $query)
     {
+        $query->with(['contest', 'user', 'details']);
+
         $user = $request->user();
 
-        // If the user is not an admin, filter by the contests they have access to
         if (!$user->is_admin()) {
             $query->whereHas('contest', function ($contestQuery) use ($user) {
                 $contestQuery->where('team_id', $user->current_team_id);
@@ -37,14 +38,12 @@ class Work extends Resource
         return $query;
     }
 
-    /**
-     * Modify the query used to retrieve a single resource for details.
-     */
     public static function detailQuery(NovaRequest $request, $query)
     {
+        $query->with(['contest', 'user', 'details']);
+
         $user = $request->user();
 
-        // If the user is not an admin, filter by the contests they have access to
         if (!$user->is_admin()) {
             $query->whereHas('contest', function ($contestQuery) use ($user) {
                 $contestQuery->where('team_id', $user->current_team_id);
@@ -53,6 +52,8 @@ class Work extends Resource
 
         return $query;
     }
+
+
     public static $model = \App\Models\Work::class;
 
     /**
@@ -75,7 +76,6 @@ class Work extends Resource
         'description_en',
         'video_url',
         'file_path',
-
     ];
 
     /**
@@ -105,16 +105,38 @@ class Work extends Resource
             Text::make('Video URL')
                 ->nullable(),
 
+            Text::make('Artwork Image', function () {
+                if (!$this->file_path || !Storage::disk('public')->exists($this->file_path)) {
+                    return '—';
+                }
+
+                $url = Storage::disk('public')->url($this->file_path);
+
+                return '<img src="' . e($url) . '" alt="Artwork" style="width:50px;height:50px;object-fit:cover;border-radius:6px;">';
+            })->asHtml()->onlyOnIndex(),
+
             Image::make('Artwork Image', 'file_path')
                 ->disk('public')
-                ->thumbnail(fn ($value, $disk) => $value
-                    ? Storage::disk($disk)->url($value)
-                    : null
-                )
-                ->preview(fn ($value, $disk) => $value
-                    ? Storage::disk($disk)->url($value)
-                    : null
-                )
+                ->thumbnail(function ($value, $disk) {
+                    if (!$value || !Storage::disk($disk)->exists($value)) {
+                        return null;
+                    }
+
+                    $mime = Storage::disk($disk)->mimeType($value) ?: 'image/jpeg';
+                    $data = base64_encode(Storage::disk($disk)->get($value));
+
+                    return 'data:' . $mime . ';base64,' . $data;
+                })
+                ->preview(function ($value, $disk) {
+                    if (!$value || !Storage::disk($disk)->exists($value)) {
+                        return null;
+                    }
+
+                    $mime = Storage::disk($disk)->mimeType($value) ?: 'image/jpeg';
+                    $data = base64_encode(Storage::disk($disk)->get($value));
+
+                    return 'data:' . $mime . ';base64,' . $data;
+                })
                 ->hideFromIndex(),
 
             Number::make('Rank')
@@ -128,16 +150,13 @@ class Work extends Resource
                 ->sortable()
                 ->nullable(),
 
-
             Number::make('Total Score')
                 ->sortable()
                 ->readonly(),
 
-            // Boolean::make('Is Finalized')
-            //     ->readonly() // Prevents this field from being edited manually in Nova
-            //     ->sortable(),
             Boolean::make('View on Front')
-                ->sortable(),
+                ->sortable()
+                ->onlyOnForms(),
 
             BelongsTo::make('Contest')
                 ->sortable()
@@ -150,8 +169,6 @@ class Work extends Resource
                 ->relatableQueryUsing(function (NovaRequest $request, $query) {
                     return $query->where('current_team_id', $request->user()->current_team_id);
                 }),
-
-
 
             HasMany::make('Scores'),
         ];
@@ -199,33 +216,44 @@ class Work extends Resource
     public function actions(NovaRequest $request)
     {
         return [
-            ExportAsCsv::make()->withFormat(
-                function ($model) {
-                    return [
-                        'id' => $model->getKey(),
-                        'title' => $model->name ?? '',
-                        'name' => $model->details?->full_name ?? $model->user?->name ?? '',
-                        'file_path' => $model->file_path ? asset("storage/" . $model->file_path) : ($model->video_url ?? ''),
-                        'description' => $model->description ?? '',
-                        'rank' => $model->rank ?? '',
-                        'total_score' => $model->total_score ?? '',
-                        'contest_name' => $model->contest?->name ?? '',
-                        'user_name' => $model->user?->name ?? '',
-                        'type' => $model->details?->type ?? '',
-                        'age_group' => $model->details?->age_group ?? '',
-                        'year' => $model->details?->year ?? '',
-                        'country' => $model->details?->country ?? '',
-                        'county' => $model->details?->county ?? '',
-                        'city' => $model->details?->city ?? '',
-                        'work_details_contact' => implode("\n", array_filter([
-                            'Teacher name: ' . ($model->details?->mentor ?? '') . "\n",
-                            'Email: ' . ($model->user->email ?? '') . "\n",
-                            'Phone: ' . ($model->details?->phone ?? '') . "\n",
-                            'School: ' . ($model->details?->school ?? '') . "\n",
-                        ])),
-                    ];
-                }
-            ),
+            ExportAsCsv::make()
+                ->withQuery(function ($query) {
+                    $query->with(['user', 'contest', 'details']);
+
+                    if (in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive($query->getModel()))) {
+                        $query->withoutTrashed();
+                    }
+
+                    return $query;
+                })
+                ->withFormat(
+                    function ($model) {
+                        return [
+                            'id' => $model->getKey(),
+                            'title' => $model->name ?? '',
+                            'name' => $model->details?->full_name ?? $model->user?->name ?? '',
+                            'file_path' => $model->file_path ? asset('storage/' . $model->file_path) : ($model->video_url ?? ''),
+                            'description' => $model->description ?? '',
+                            'rank' => $model->rank ?? '',
+                            'total_score' => $model->total_score ?? '',
+                            'contest_name' => $model->contest?->name ?? '',
+                            'user_name' => $model->user?->name ?? '',
+                            'type' => $model->details?->type ?? '',
+                            'age_group' => $model->details?->age_group ?? '',
+                            'year' => $model->details?->year ?? '',
+                            'country' => $model->details?->country ?? '',
+                            'county' => $model->details?->county ?? '',
+                            'city' => $model->details?->city ?? '',
+                            'work_details_contact' => implode("\n", array_filter([
+                                'Teacher name: ' . ($model->details?->mentor ?? '') . "\n",
+                                'Email: ' . ($model->user->email ?? '') . "\n",
+                                'Phone: ' . ($model->details?->phone ?? '') . "\n",
+                                'School: ' . ($model->details?->school ?? '') . "\n",
+                            ])),
+                        ];
+                    }
+                ),
         ];
     }
+
 }

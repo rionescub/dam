@@ -34,6 +34,7 @@ class TeamApiController extends Controller
             ->get()
             ->keyBy('key');
 
+
         return response()->json($content);
     }
 }

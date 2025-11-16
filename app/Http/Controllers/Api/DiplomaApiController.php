@@ -38,8 +38,7 @@ class DiplomaApiController extends Controller
         $diploma = Diploma::where('id', $id)
             ->with('user', 'work', 'contest', 'work.details')
             ->findOrFail($id);
-
-        if ($diploma->user_id !== $request->user()->id) {
+        if ($diploma->user_id != $request->user()->id) {
             return response()->json(['message' => 'Unauthorized to download diploma'], Response::HTTP_FORBIDDEN);
         }
 

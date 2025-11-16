@@ -8,7 +8,7 @@ use App\Models\Work;
 use App\Models\Score;
 use App\Models\Diploma;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\Log;
 
 class UpdateContestResults extends Command
 {
@@ -22,54 +22,55 @@ class UpdateContestResults extends Command
 
     public function handle()
     {
-        // Get all contests with their works, scores, and details
         $contests = Contest::with(['works.scores', 'works.details'])
-            ->where('jury_date', '<', Carbon::now())
-            ->where('ceremony_date', '>=', Carbon::now())
+            ->whereDate('ceremony_date', Carbon::today())
             ->get();
 
-        dd($contests);
-
         foreach ($contests as $contest) {
-            // Get all works related to the contest
-            $works = $contest->works;
+            $works = $contest->works()->withoutTrashed()->get();
 
-            // Calculate total scores for each work
             foreach ($works as $work) {
-                // Sum total scores for each work, defaulting to 3 if no scores are found
                 $totalScore = $work->scores()->sum('total_score') ?: 3;
-
-
-                // Update work total score
                 $work->total_score = $totalScore;
                 $work->save();
             }
 
-            // Group works by work_details type and age_group
             $worksGrouped = $works->groupBy([
                 function ($work) {
-                    return $work->details->type;
+                    return optional($work->details)->type ?? 'undefined';
                 },
                 function ($work) {
-                    return $work->details->age_group;
+                    return optional($work->details)->age_group ?? 'undefined';
                 },
             ]);
 
-            // Rank works within each type and age_group
             foreach ($worksGrouped as $type => $groupedByAgeGroup) {
                 foreach ($groupedByAgeGroup as $ageGroup => $groupedWorks) {
-                    // Sort the works in this group by total_score descending
+                    Log::info('Ranking group', [
+                        'contest_id' => $contest->id,
+                        'type' => $type,
+                        'age_group' => $ageGroup,
+                        'works_count' => $groupedWorks->count(),
+                        'work_ids' => $groupedWorks->pluck('id'),
+                        'scores' => $groupedWorks->pluck('total_score', 'id'),
+                    ]);
+
                     $rankedWorks = $groupedWorks->sortByDesc('total_score')->values();
 
-                    // Assign ranks within this group
                     foreach ($rankedWorks as $index => $work) {
                         $work->rank = $index + 1;
                         $work->save();
+                        Log::info('Assigned rank', [
+                            'work_id' => $work->id,
+                            'rank' => $work->rank,
+                            'total_score' => $work->total_score,
+                            'type' => $type,
+                            'age_group' => $ageGroup,
+                        ]);
                     }
                 }
             }
 
-            // Generate diplomas for each work
             foreach ($works as $work) {
                 Diploma::updateOrCreate(
                     [

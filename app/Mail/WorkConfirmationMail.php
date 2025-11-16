@@ -28,15 +28,13 @@ class WorkConfirmationMail extends Mailable
             4 => 'emails.work_confirmation_au',
             5 => 'emails.work_confirmation_ua',
             6 => 'emails.work_confirmation_cz',
-            7 => 'emails.work_confirmation_rs',
-            8 => 'emails.work_confirmation_sk',
-            default => 'emails.work_confirmation_en',
+            default => 'emails.work_confirmation_au',
         };
 
         return $this->view($view)
             ->with([
                 'user' => $this->user,
             ])
-            ->subject('Best채tigung deiner Einreichung beim Danube Art Master');
+            ->subject('Welcome to Danube Art Master');
     }
 }
