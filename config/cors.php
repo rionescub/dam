@@ -34,7 +34,12 @@ return [
     | limit this to specific domains for security reasons.
     |
     */
-    'allowed_origins' => ['http://dam-fe.test:3000', 'http://localhost:8080', 'protalentis.eu', 'danubeartmaster.eu'], // Allow all origins, change this to specific origins in production.
+    'allowed_origins' => [
+        'http://dam-fe.test:3000',
+        'http://localhost:8080',
+        'https://protalentis.eu',
+        'https://danubeartmaster.eu',
+    ], // Allow all origins, change this to specific origins in production.
 
     /*
     |--------------------------------------------------------------------------
