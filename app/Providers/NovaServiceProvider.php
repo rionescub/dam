@@ -15,6 +15,7 @@ use App\Nova\Sponsor;
 use Laravel\Nova\Nova;
 use App\Nova\WorkDetails;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\Textarea;
@@ -233,9 +234,24 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                     return $teamSettingsRepo->getSetting($field->attribute);
                 });
 
-                $field->fillUsing(function ($request, $model, $attribute, $requestAttribute) use ($field, $teamSettingsRepo) {
-                    $teamSettingsRepo->setSetting($attribute, $request->$requestAttribute);
-                });
+                if ($field instanceof File) {
+                    // File::fillAttribute ignores fillUsing; must use store() callback instead
+                    $field->store(function ($request, $model, $attribute, $requestAttribute) use ($field, $teamSettingsRepo) {
+                        if (!$request->hasFile($requestAttribute)) {
+                            return true;
+                        }
+                        $path = $request->file($requestAttribute)->store(
+                            $field->getStorageDir(),
+                            $field->getStorageDisk()
+                        );
+                        $teamSettingsRepo->setSetting($attribute, $path);
+                        return [$attribute => $path];
+                    });
+                } else {
+                    $field->fillUsing(function ($request, $model, $attribute, $requestAttribute) use ($teamSettingsRepo) {
+                        $teamSettingsRepo->setSetting($attribute, $request->$requestAttribute);
+                    });
+                }
             }
             return $fields;
         }
