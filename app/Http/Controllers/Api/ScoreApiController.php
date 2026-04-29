@@ -83,7 +83,7 @@ class ScoreApiController extends Controller
     {
         $user = $request->user();
 
-        if (!in_array($user->role, ['judge', 'admin'])) {
+        if (! in_array($user->role, ['judge', 'admin'])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -121,6 +121,11 @@ class ScoreApiController extends Controller
         }
 
         $score = Score::firstOrNew(['work_id' => $work->id, 'user_id' => $user->id]);
+
+        if ($score->exists && $score->is_finalized) {
+            return response()->json(['message' => 'Score has already been finalized and cannot be changed.'], 403);
+        }
+
         $score->fill($data);
         $score->save();
 
@@ -154,8 +159,12 @@ class ScoreApiController extends Controller
             ->where('work_id', $work->id)
             ->firstOrFail();
 
-        if (!in_array($user->role, ['judge', 'admin'])) {
+        if (! in_array($user->role, ['judge', 'admin'])) {
             return response()->json(['message' => 'Role not permitted to rate'], 403);
+        }
+
+        if ($score->is_finalized) {
+            return response()->json(['message' => 'Score has already been finalized and cannot be changed.'], 403);
         }
 
         $now = Carbon::now();
@@ -185,7 +194,7 @@ class ScoreApiController extends Controller
             $q->where('team_id', $user->current_team_id);
         })->findOrFail($id);
 
-        if (!in_array($user->role, ['admin', 'judge'])) {
+        if (! in_array($user->role, ['admin', 'judge'])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -198,6 +207,10 @@ class ScoreApiController extends Controller
             'work_id' => $work->id,
             'user_id' => $user->id,
         ]);
+
+        if ($score->is_finalized) {
+            return response()->json(['message' => 'Score has already been finalized.'], 200);
+        }
 
         $score->is_finalized = true;
         $score->save();

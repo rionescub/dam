@@ -2,16 +2,21 @@
 
 namespace App\Nova;
 
-use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Date;
+use App\Models\WorkDetails as WorkDetailsModel;
+use Illuminate\Database\Eloquent\Builder;
 use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
 
 class WorkDetails extends Resource
 {
-    public static $model = \App\Models\WorkDetails::class;
+    /**
+     * @var class-string<\App\Models\WorkDetails>
+     */
+    public static $model = WorkDetailsModel::class;
 
     public static function searchableColumns()
     {
@@ -28,13 +33,13 @@ class WorkDetails extends Resource
             'age_group',
         ];
     }
+
     public static function indexQuery(NovaRequest $request, $query)
     {
         $user = $request->user();
 
-        // If the user is not an admin, filter by the contests they have access to through the Work relationship
-        if (!$user->is_admin()) {
-            $query->whereHas('work.contest', function ($contestQuery) use ($user) {
+        if (! $user->is_admin()) {
+            $query->whereHas('work.contest', function (Builder $contestQuery) use ($user): void {
                 $contestQuery->where('team_id', $user->current_team_id);
             });
         }
@@ -42,78 +47,80 @@ class WorkDetails extends Resource
         return $query;
     }
 
-    /**
-     * Modify the query used to retrieve a single resource for details.
-     */
     public static function detailQuery(NovaRequest $request, $query)
     {
         $user = $request->user();
 
-        // If the user is not an admin, filter by the contests they have access to through the Work relationship
-        if (!$user->is_admin()) {
-            $query->whereHas('work.contest', function ($contestQuery) use ($user) {
+        if (! $user->is_admin()) {
+            $query->whereHas('work.contest', function (Builder $contestQuery) use ($user): void {
                 $contestQuery->where('team_id', $user->current_team_id);
             });
         }
 
         return $query;
     }
+
     public function fields(NovaRequest $request)
     {
         return [
             ID::make()->sortable(),
 
             BelongsTo::make('Work'),
-                // ->filter(function ($query, $request) {
-                //     $user = $request->user();
-                //     $query->whereHas('contest', function ($contestQuery) use ($user) {
-                //         $contestQuery->where('team_id', $user->current_team_id);
-                //     });
-                // }),
 
-            Text::make('Full Name')
+            Text::make('Full Name', 'full_name')
                 ->sortable()
-                ->rules('required', 'max:255'),
+                ->rules('required', 'max:191'),
 
-            Text::make('Country')
+            Text::make('Country', 'country')
                 ->sortable()
-                ->rules('nullable', 'max:255'),
+                ->rules('nullable', 'max:191'),
 
-            Text::make('County')
+            Text::make('County', 'county')
                 ->sortable()
-                ->rules('nullable', 'max:255'),
+                ->rules('nullable', 'max:191'),
 
-            Text::make('City')
+            Text::make('City', 'city')
                 ->sortable()
-                ->rules('required', 'max:255'),
+                ->rules('required', 'max:191'),
 
-            Text::make('Mentor')
+            Text::make('Mentor', 'mentor')
                 ->sortable()
-                ->rules('nullable', 'max:255'),
+                ->rules('nullable', 'max:191'),
 
-            Text::make('Phone')
+            Text::make('Phone', 'phone')
                 ->sortable()
-                ->rules('nullable', 'max:20'),
+                ->rules('nullable', 'max:191'),
 
-            Text::make('School')
+            Text::make('School', 'school')
                 ->sortable()
-                ->rules('nullable', 'max:255'),
+                ->rules('nullable', 'max:191'),
 
-            Text::make('School Director')
+            Text::make('School Director', 'school_director')
                 ->sortable()
-                ->rules('nullable', 'max:255'),
+                ->rules('nullable', 'max:191'),
 
-            Text::make('Year')
+            Text::make('Year', 'year')
                 ->sortable()
-                ->rules('nullable', 'max:255'),
+                ->rules('nullable', 'max:191'),
 
-            Text::make('Age Group')
+            Select::make('Age Group', 'age_group')
                 ->sortable()
-                ->rules('required'),
+                ->options([
+                    '6-11'  => '6–11',
+                    '12-18' => '12–18',
+                ])
+                ->displayUsingLabels()
+                ->rules('required', 'max:191'),
 
-            Text::make('Type')
+            Select::make('Type', 'type')
                 ->sortable()
-                ->rules('required'),
+                ->options([
+                    'video'   => 'Video',
+                    'img'     => 'Image',
+                    'artwork' => 'Artwork',
+                ])
+                ->displayUsingLabels()
+                ->rules('required', 'max:191'),
         ];
     }
 }

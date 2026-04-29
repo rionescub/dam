@@ -3,32 +3,37 @@
 namespace App\Models;
 
 use App\Scopes\WorkTeam;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class WorkDetails extends Model
 {
     use HasFactory;
 
+    /**
+     * @var array<int, string>
+     */
     protected $fillable = [
         'work_id',
         'team_id',
-        'full_name', // Contestant Name
+        'full_name',
         'country',
         'county',
         'city',
-        'phone', // Mentor Phone
+        'phone',
         'mentor',
         'school',
-        'school_director', // Optional (can be removed if not used)
-        'year', // Year (Class)
-        'age_group', // Age group (e.g., 6-11, 14-18)
-        'type', // Type of artwork
+        'school_director',
+        'year',
+        'age_group',
+        'type',
     ];
+
     protected static function booted(): void
     {
         static::addGlobalScope(new WorkTeam());
     }
+
     public function work()
     {
         return $this->belongsTo(Work::class);
