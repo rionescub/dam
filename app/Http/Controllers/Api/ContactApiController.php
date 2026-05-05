@@ -45,17 +45,16 @@ class ContactApiController extends Controller
             'team_id' => $team->id
         ]));
 
-       $email1 = DB::table('nova_settings')->where('key', 'email_1')->where('team_id', $team->id)->first();
-       $email2 = DB::table('nova_settings')->where('key', 'email_2')->where('team_id', $team->id)->first();
+        $email1 = DB::table('nova_settings')->where('key', 'email_1')->where('team_id', $team->id)->value('value');
+        $email2 = DB::table('nova_settings')->where('key', 'email_2')->where('team_id', $team->id)->value('value');
 
-        if (filter_var($email1->value, FILTER_VALIDATE_EMAIL)) {
-            Mail::to($email1->value)->send(new \App\Mail\ContactMail($contact));
-        } else if ( filter_var($email2->value, FILTER_VALIDATE_EMAIL)) {
-            Mail::to($email2->value)->send(new \App\Mail\ContactMail($contact));
-        } else {
+        $recipients = array_filter([$email1, $email2], fn($e) => filter_var($e, FILTER_VALIDATE_EMAIL));
 
-            Mail::to(config('mail.admin_email'))->send(new \App\Mail\ContactMail($contact));
+        if (empty($recipients)) {
+            $recipients = [config('mail.admin_email')];
         }
+
+        Mail::to($recipients)->send(new \App\Mail\ContactMail($contact));
 
         return response()->json(['message' => 'Contact saved and email sent.'], 201);
     }

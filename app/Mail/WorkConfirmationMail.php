@@ -21,20 +21,24 @@ class WorkConfirmationMail extends Mailable
 
     public function build()
     {
-        $view = match ($this->user->current_team_id) {
-            1 => 'emails.work_confirmation_ro',
-            2 => 'emails.work_confirmation_hu',
-            3 => 'emails.work_confirmation_sl',
-            4 => 'emails.work_confirmation_au',
-            5 => 'emails.work_confirmation_ua',
-            6 => 'emails.work_confirmation_cz',
-            default => 'emails.work_confirmation_au',
+        $link = $this->user->currentTeam?->link ?? 'en';
+
+        $view = match ($link) {
+            'ro' => 'emails.work_confirmation_ro',
+            'hu' => 'emails.work_confirmation_hu',
+            'sl' => 'emails.work_confirmation_sl',
+            'au' => 'emails.work_confirmation_au',
+            'de' => 'emails.work_confirmation_de',
+            'ua' => 'emails.work_confirmation_ua',
+            'cz' => 'emails.work_confirmation_cz',
+            'rs' => 'emails.work_confirmation_rs',
+            'sk' => 'emails.work_confirmation_sk',
+            'bs' => 'emails.work_confirmation_bs',
+            default => 'emails.work_confirmation_en',
         };
 
         return $this->view($view)
-            ->with([
-                'user' => $this->user,
-            ])
+            ->with(['user' => $this->user])
             ->subject('Welcome to Danube Art Master');
     }
 }

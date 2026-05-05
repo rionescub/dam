@@ -209,10 +209,7 @@ class WorkApiController extends Controller
 
         $workDetails->save();
 
-        // Send an email to the user
-        if ($user->current_team_id == 4) {
-            Mail::to($user->email)->send(new WorkConfirmationMail($work));
-        }
+        Mail::to($user->email)->send(new WorkConfirmationMail($user));
 
         return response()->json(['message' => 'Artwork submitted successfully', 'work' => $work], 201);
     }
@@ -245,7 +242,7 @@ class WorkApiController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $work->title = $request->title;
+        $work->name = $request->title;
         $work->description = $request->description;
 
         if ($request->hasFile('file')) {
@@ -275,7 +272,7 @@ class WorkApiController extends Controller
         $user = $request->user();
         $teamId = $user->current_team_id;
 
-        $work = Work::where('team_id', $teamId)->findOrFail($id);
+        $work = Work::findOrFail($id);
 
         if ($work->user_id !== $user->id && $user->role !== 'judge') {
             return response()->json(['message' => 'Unauthorized'], 403);

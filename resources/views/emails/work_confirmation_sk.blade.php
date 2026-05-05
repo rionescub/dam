@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Čestitamo! Uspešno ste se prijavili za takmičenje „Maestro Dunava 2025”!</title>
+    <title>Blahoželáme! Úspešne ste odoslali svoje dielo do súťaže „Majster dunajského umenia 2025"!</title>
 </head>
 <body>
-<p>Poštovani {{ $user->first_name }}!</p>
-<p>Hvala vam na prijavi. Drago nam je što učestvujete na Danube Art Master!</p>
+<p>Dobrý deň, {{ $user->first_name }}!</p>
+<p>Ďakujeme za vaše dielo. Tešíme sa, že sa zúčastňujete Danube Art Master!</p>
 
-<p>Srećno.</p>
-<p>S poštovanjem,</p>
-<p>Organizatori</p>
+<p>Veľa šťastia.</p>
+<p>S pozdravom,</p>
+<p>Organizátori</p>
 </body>
 </html>

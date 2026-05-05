@@ -97,18 +97,8 @@ class ScoreApiController extends Controller
             'aesthetic_score' => 'nullable|numeric|min:0|max:10',
         ]);
 
-        $data = [
-            'creativity_score' => 1,
-            'link_score' => 1,
-            'aesthetic_score' => 1,
-        ];
-
         $attribute = $request->input('attribute');
         $val = $request->input('score');
-
-        if (array_key_exists($attribute, $data)) {
-            $data[$attribute] = $val;
-        }
 
         $work = Work::with('contest')->findOrFail($request->work_id);
         if ((int) $work->contest->team_id !== (int) $user->current_team_id) {
@@ -126,7 +116,16 @@ class ScoreApiController extends Controller
             return response()->json(['message' => 'Score has already been finalized and cannot be changed.'], 403);
         }
 
-        $score->fill($data);
+        $allowed = ['creativity_score', 'link_score', 'aesthetic_score'];
+        if ($attribute && in_array($attribute, $allowed)) {
+            if (!$score->exists) {
+                $score->creativity_score = 1;
+                $score->link_score = 1;
+                $score->aesthetic_score = 1;
+            }
+            $score->$attribute = $val;
+        }
+
         $score->save();
 
         return response()->json(['message' => 'Score created/updated successfully', 'score' => $score], 201);
