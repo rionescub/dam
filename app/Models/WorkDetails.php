@@ -23,6 +23,7 @@ class WorkDetails extends Model
         'phone',
         'mentor',
         'school',
+        'school_address',
         'school_director',
         'year',
         'age_group',

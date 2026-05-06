@@ -136,7 +136,10 @@ class WorkApiController extends Controller
             'description' => 'required|string',
             'contest_id' => 'required|exists:contests,id',
             'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf,webp|max:16384',
-            'video_url' => 'nullable|url',
+            'video_url' => [
+                'nullable',
+                'regex:/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be|vimeo\.com|dropbox\.com|drive\.google\.com)\/.+$/'
+            ],
             'age_group' => 'required|string|max:20',
             'full_name' => 'required|string|max:255',
             'type' => 'required|string|max:255',
@@ -144,6 +147,7 @@ class WorkApiController extends Controller
             'country' => 'nullable|string|max:255',
             'county' => 'nullable|string|max:255',
             'school' => 'nullable|string|max:255',
+            'school_address' => 'nullable|string|max:255',
             'year' => 'required|string|max:20',
             'mentor' => 'nullable|string|max:255',
             'phone' => 'nullable|numeric|digits_between:8,15',
@@ -203,6 +207,7 @@ class WorkApiController extends Controller
         $workDetails->country = $request->country;
         $workDetails->county = $request->county;
         $workDetails->school = $request->school;
+        $workDetails->school_address = $request->school_address;
         $workDetails->year = $request->year;
         $workDetails->mentor = $request->mentor;
         $workDetails->phone = $request->phone;

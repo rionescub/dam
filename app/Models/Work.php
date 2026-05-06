@@ -37,6 +37,10 @@ class Work extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new ContestTeam());
+
+        static::deleting(function ($work) {
+            $work->details()->delete();
+        });
     }
 
     public function contest()

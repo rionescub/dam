@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Models\WorkDetails as WorkDetailsModel;
+use App\Nova\Filters\ContestFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
@@ -36,6 +37,8 @@ class WorkDetails extends Resource
 
     public static function indexQuery(NovaRequest $request, $query)
     {
+        $query->with(['work.user', 'work.contest']);
+
         $user = $request->user();
 
         if (! $user->is_admin()) {
@@ -49,6 +52,8 @@ class WorkDetails extends Resource
 
     public static function detailQuery(NovaRequest $request, $query)
     {
+        $query->with(['work.user', 'work.contest']);
+
         $user = $request->user();
 
         if (! $user->is_admin()) {
@@ -71,6 +76,10 @@ class WorkDetails extends Resource
                 ->sortable()
                 ->rules('required', 'max:191'),
 
+            Text::make('User Email', fn() => $this->work?->user?->email)
+                ->sortable()
+                ->onlyOnIndex(),
+
             Text::make('Country', 'country')
                 ->sortable()
                 ->rules('nullable', 'max:191'),
@@ -92,6 +101,10 @@ class WorkDetails extends Resource
                 ->rules('nullable', 'max:191'),
 
             Text::make('School', 'school')
+                ->sortable()
+                ->rules('nullable', 'max:191'),
+
+            Text::make('School Address', 'school_address')
                 ->sortable()
                 ->rules('nullable', 'max:191'),
 
@@ -121,6 +134,13 @@ class WorkDetails extends Resource
                 ])
                 ->displayUsingLabels()
                 ->rules('required', 'max:191'),
+        ];
+    }
+
+    public function filters(NovaRequest $request)
+    {
+        return [
+            new ContestFilter(throughWork: true),
         ];
     }
 }
