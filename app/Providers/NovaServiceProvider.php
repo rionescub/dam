@@ -247,6 +247,14 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                         $teamSettingsRepo->setSetting($attribute, $path);
                         return [$attribute => $path];
                     });
+
+                    $field->delete(function ($request, $model, $disk, $path) use ($field, $teamSettingsRepo) {
+                        if ($path) {
+                            \Illuminate\Support\Facades\Storage::disk($disk ?: $field->getStorageDisk())->delete($path);
+                        }
+                        $teamSettingsRepo->setSetting($field->attribute, null);
+                        return [$field->attribute => null];
+                    });
                 } else {
                     $field->fillUsing(function ($request, $model, $attribute, $requestAttribute) use ($teamSettingsRepo) {
                         $teamSettingsRepo->setSetting($attribute, $request->$requestAttribute);
