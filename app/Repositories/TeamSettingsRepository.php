@@ -25,15 +25,7 @@ class TeamSettingsRepository
             ->value('value');
     }
 
-    public function setSetting($key, $value)
-    {
-        \Log::info('setSetting called', [
-            'team_id' => $this->teamId,
-            'group' => $this->group,
-            'key' => $key,
-            'value' => $value,
-        ]);
-
+    public function setSetting($key, $value)    {
         DB::table('nova_settings')->updateOrInsert(
             [
                 'team_id' => $this->teamId,
