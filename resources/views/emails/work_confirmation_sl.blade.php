@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Čestitke! Uspešno ste oddali svoje delo za tekmovanje „Umetnik Donave 2025"!</title>
+    <title>Čestitke! Uspešno ste oddali svoje delo za tekmovanje „Umetnik Donave {{ date('Y') }}"!</title>
 </head>
 <body>
 <p>Živjo, {{ $user->first_name }}!</p>

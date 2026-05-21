@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Herzlichen Glückwunsch! Du hast dich erfolgreich für den Wettbewerb „Meister der Donaukunst 2025“ registriert!</title>
+    <title>Herzlichen Glückwunsch! Du hast dich erfolgreich für den Wettbewerb „Meister der Donaukunst {{ date('Y') }}“ registriert!</title>
 </head>
 
 <body>

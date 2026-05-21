@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Felicitări! Te-ai înregistrat cu succes la concursul „Maestrul Dunării 2025”!</title>
+    <title>Felicitări! Te-ai înregistrat cu succes la concursul „Maestrul Dunării {{ date('Y') }}”!</title>
 </head>
 
 <body>

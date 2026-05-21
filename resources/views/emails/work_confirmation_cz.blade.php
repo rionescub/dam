@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Gratulujeme! Úspěšně jste odeslali své dílo do soutěže „Umělec Dunaje 2025"!</title>
+    <title>Gratulujeme! Úspěšně jste odeslali své dílo do soutěže „Umělec Dunaje {{ date('Y') }}"!</title>
 </head>
 <body>
 <p>Dobrý den, {{ $user->first_name }}!</p>

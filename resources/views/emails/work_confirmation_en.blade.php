@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Congratulations! You have successfully registered for the "Master of Danube Art 202Y" competition!</title>
+    <title>Congratulations! You have successfully registered for the "Master of Danube Art {{ date('Y') }}" competition!</title>
 </head>
 
 <body>

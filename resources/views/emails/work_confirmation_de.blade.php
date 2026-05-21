@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Herzlichen Glückwunsch! Du hast dein Werk erfolgreich beim Wettbewerb „Meister der Donaukunst 2025" eingereicht!</title>
+    <title>Herzlichen Glückwunsch! Du hast dein Werk erfolgreich beim Wettbewerb „Meister der Donaukunst {{ date('Y') }}" eingereicht!</title>
 </head>
 <body>
 <p>Guten Tag, {{ $user->first_name }}!</p>

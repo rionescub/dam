@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Blahoželáme! Úspešne ste odoslali svoje dielo do súťaže „Majster dunajského umenia 2025"!</title>
+    <title>Blahoželáme! Úspešne ste odoslali svoje dielo do súťaže „Majster dunajského umenia {{ date('Y') }}"!</title>
 </head>
 <body>
 <p>Dobrý deň, {{ $user->first_name }}!</p>

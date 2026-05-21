@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Čestitamo! Uspešno ste predali rad za takmičenje „Majstor dunavske umetnosti 2025”!</title>
+    <title>Čestitamo! Uspešno ste predali rad za takmičenje „Majstor dunavske umetnosti {{ date('Y') }}”!</title>
 </head>
 
 <body>

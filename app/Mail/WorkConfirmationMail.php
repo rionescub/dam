@@ -7,6 +7,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Repositories\TeamSettingsRepository;
 
 class WorkConfirmationMail extends Mailable
 {
@@ -21,6 +22,18 @@ class WorkConfirmationMail extends Mailable
 
     public function build()
     {
+        $teamId = $this->user->current_team_id;
+        $customHtml = (new TeamSettingsRepository($teamId, 'emails'))->getSetting('email_work_confirmation');
+
+        if ($customHtml) {
+            $html = str_replace(
+                ['{first_name}', '{year}'],
+                [$this->user->first_name, date('Y')],
+                $customHtml
+            );
+            return $this->html($html)->subject('Welcome to Danube Art Master');
+        }
+
         $link = $this->user->currentTeam?->link ?? 'en';
 
         $view = match ($link) {

@@ -7,6 +7,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Repositories\TeamSettingsRepository;
 
 class UserConfirmationMail extends Mailable
 {
@@ -23,7 +24,19 @@ class UserConfirmationMail extends Mailable
 
     public function build()
     {
-        $view = match ($this->user->current_team_id) {
+        $teamId = $this->user->current_team_id;
+        $customHtml = (new TeamSettingsRepository($teamId, 'emails'))->getSetting('email_user_confirmation');
+
+        if ($customHtml) {
+            $html = str_replace(
+                ['{first_name}', '{verification_url}', '{year}'],
+                [$this->user->first_name, $this->verificationUrl, date('Y')],
+                $customHtml
+            );
+            return $this->html($html)->subject('Confirm Your Email Address');
+        }
+
+        $view = match ($teamId) {
             1 => 'emails.user_confirmation_ro',
             2 => 'emails.user_confirmation_hu',
             3 => 'emails.user_confirmation_sl',

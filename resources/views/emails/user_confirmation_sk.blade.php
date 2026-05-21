@@ -2,12 +2,12 @@
 <html>
 
 <head>
-    <title>Blahoželáme! Úspešne ste sa zaregistrovali do súťaže „Majster dunajského umenia 2025“!</title>
+    <title>Blahoželáme! Úspešne ste sa zaregistrovali do súťaže „Majster dunajského umenia {{ date('Y') }}“!</title>
 </head>
 
 <body>
 <p>Dobrý deň, {{ $user->first_name }}!</p>
-<p>Blahoželáme! Úspešne ste sa zaregistrovali do súťaže „Danube Art Master 2025“!</p>
+<p>Blahoželáme! Úspešne ste sa zaregistrovali do súťaže „Danube Art Master {{ date('Y') }}“!</p>
 <p>Ak chcete potvrdiť svoju e-mailovú adresu, kliknite na nasledujúci odkaz:</p>
 <a href="{{ $verificationUrl }}">Potvrdiť e-mail</a>
 </body>

@@ -2,12 +2,12 @@
 <html>
 
 <head>
-    <title>Herzlichen Glückwunsch! Du hast dich erfolgreich für den Wettbewerb „Meister der Donaukunst 2025“ registriert!</title>
+    <title>Herzlichen Glückwunsch! Du hast dich erfolgreich für den Wettbewerb „Meister der Donaukunst {{ date('Y') }}“ registriert!</title>
 </head>
 
 <body>
 <p>Guten Tag, {{ $user->first_name }}!</p>
-<p>Herzlichen Glückwunsch! Du hast dich erfolgreich für den Wettbewerb „Danube Art Master 2025“ registriert!</p>
+<p>Herzlichen Glückwunsch! Du hast dich erfolgreich für den Wettbewerb „Danube Art Master {{ date('Y') }}“ registriert!</p>
 <p>Um deine E-Mail-Adresse zu bestätigen, folge bitte dem untenstehenden Link:</p>
 <a href="{{ $verificationUrl }}">E-Mail bestätigen</a>
 </body>
