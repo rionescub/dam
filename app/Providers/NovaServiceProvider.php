@@ -136,13 +136,13 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 return $menu;
             }
 
-            return $menu->append(
-                \Laravel\Nova\Menu\MenuSection::make('Switch Team', \App\Models\Team::orderBy('name')->get()->map(function (\App\Models\Team $team) use ($user) {
-                    $name = $team->name . ($team->id === $user->current_team_id ? ' ✓' : '');
+            $items = \App\Models\Team::orderBy('name')->get()->map(function (\App\Models\Team $team) use ($user) {
+                $name = ($team->id === $user->current_team_id ? '✓ ' : '— ') . $team->name;
 
-                    return \Laravel\Nova\Menu\MenuItem::externalLink($name, route('admin.switch-team', $team));
-                })->all())->collapsable()->icon('user-group')
-            );
+                return \Laravel\Nova\Menu\MenuItem::externalLink($name, route('admin.switch-team', $team));
+            });
+
+            return $menu->append($items->all());
         });
     }
 
