@@ -47,6 +47,7 @@ class WorkConfirmationMail extends Mailable
             'rs' => 'emails.work_confirmation_rs',
             'sk' => 'emails.work_confirmation_sk',
             'bs' => 'emails.work_confirmation_bs',
+            'bih' => 'emails.work_confirmation_bih',
             default => 'emails.work_confirmation_en',
         };
 

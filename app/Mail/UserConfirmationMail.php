@@ -33,18 +33,26 @@ class UserConfirmationMail extends Mailable
                 [$this->user->first_name, $this->verificationUrl, date('Y')],
                 $customHtml
             );
+
+            if (!str_contains($html, $this->verificationUrl)) {
+                $html .= '<p><a href="' . $this->verificationUrl . '">' . $this->verificationUrl . '</a></p>';
+            }
+
             return $this->html($html)->subject('Confirm Your Email Address');
         }
 
-        $view = match ($teamId) {
-            1 => 'emails.user_confirmation_ro',
-            2 => 'emails.user_confirmation_hu',
-            3 => 'emails.user_confirmation_sl',
-            4 => 'emails.user_confirmation_au',
-            5 => 'emails.user_confirmation_ua',
-            6 => 'emails.user_confirmation_cz',
-            7 => 'emails.user_confirmation_rs',
-            8 => 'emails.user_confirmation_sk',
+        $link = $this->user->currentTeam?->link ?? 'en';
+
+        $view = match ($link) {
+            'ro' => 'emails.user_confirmation_ro',
+            'hu' => 'emails.user_confirmation_hu',
+            'sl' => 'emails.user_confirmation_sl',
+            'au' => 'emails.user_confirmation_au',
+            'ua' => 'emails.user_confirmation_ua',
+            'cz' => 'emails.user_confirmation_cz',
+            'rs' => 'emails.user_confirmation_rs',
+            'sk' => 'emails.user_confirmation_sk',
+            'bih' => 'emails.user_confirmation_bih',
             default => 'emails.user_confirmation',
         };
 

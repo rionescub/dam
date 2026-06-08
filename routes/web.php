@@ -27,6 +27,14 @@ Route::prefix('admin')->group(function () {
 
         Route::get('/diplomas/{diploma}', [DiplomaController::class, 'download'])
             ->name('diploma.download');
+
+        Route::get('/switch-team/{team}', function (\App\Models\Team $team) {
+            abort_unless(auth()->user()?->is_super_admin(), 403);
+
+            auth()->user()->forceFill(['current_team_id' => $team->id])->save();
+
+            return redirect('/admin');
+        })->name('admin.switch-team');
     });
 
     Route::fallback(function () {

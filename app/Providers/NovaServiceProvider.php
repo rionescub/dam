@@ -42,6 +42,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         parent::boot();
 
         $this->register_menu();
+        $this->register_user_menu();
 
         // Register settings when Nova is serving a request
         Nova::serving(function (ServingNova $event) {
@@ -118,6 +119,30 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 
                 ])->collapsable(),
             ];
+        });
+    }
+
+    /**
+     * Add a "switch team" section to the user menu for superadmins.
+     *
+     * @return void
+     */
+    public function register_user_menu()
+    {
+        Nova::userMenu(function (Request $request, $menu) {
+            $user = $request->user();
+
+            if (!$user || !$user->is_super_admin()) {
+                return $menu;
+            }
+
+            return $menu->append(
+                \Laravel\Nova\Menu\MenuSection::make('Switch Team', \App\Models\Team::orderBy('name')->get()->map(function (\App\Models\Team $team) use ($user) {
+                    $name = $team->name . ($team->id === $user->current_team_id ? ' ✓' : '');
+
+                    return \Laravel\Nova\Menu\MenuItem::externalLink($name, route('admin.switch-team', $team));
+                })->all())->collapsable()->icon('user-group')
+            );
         });
     }
 

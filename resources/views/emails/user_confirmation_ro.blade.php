@@ -2,31 +2,17 @@
 <html>
 
 <head>
-    <title>Confirmare adresa de email</title>
+    <title>Confirmare adresă de email</title>
 </head>
 
 <body>
-<p>Bună ziua, {{ $user->first_name }}!</p>
-<p>Felicitări! Te-ai înregistrat cu succes pentru competiția „Artistul Dunării {{ date('Y') }}”!</p>
-<p>Îți mulțumim pentru interesul acordat și pentru dorința de a contribui la protecția mediului prin creațiile tale
-    artistice. Așteptăm cu nerăbdare să vedem cum Dunărea și afluenții săi te vor inspira.</p>
-<p>Pentru a confirma adresa de email, te rugam sa urmezi linkul de mai jos:</p>
-<a href="{{ $verificationUrl }}">Confirma Email</a>
-</body>
-<p> Ce urmează?</p>
-<ol>
-    <li>Pregătește-ți lucrarea: Creează o lucrare originală inspirată de Dunăre (artă, fotografie sau video).</li>
-    <li>Încărcarea lucrării: Poți încărca lucrarea ta pe platformă până pe 7 noiembrie {{ date('Y') }}, ora 23:00.</li>
-    <li>Verifică regulamentul: Asigură-te că ai citit regulamentul oficial pentru a îndeplini toate cerințele
-        competiției.</li>
-</ol>
-<p>Diplome de participare: Toți participanții vor primi o diplomă de participare!</p>
-<p>Dacă ai întrebări, nu ezita să ne contactezi la <a
-        href="mailto:artistuldunariigwp@gmail.com">artistuldunariigwp@gmail.com</a> sau să consulți regulamentul
-    competiției pe site-ul nostru.</p>
-<p>Succes și multă inspirație în realizarea lucrării tale!</p>
-<p>Cu drag,</p>
-<p>Echipa „Artistul Dunării {{ date('Y') }}”</p>
+<p>Bine ai venit {{ $user->first_name }} !</p>
+<p>Te rugăm să confirmi înregistrarea contului accesând link-ul de mai jos:</p>
+<p><a href="{{ $verificationUrl }}">{{ $verificationUrl }}</a></p>
+<p>Nu uita, pentru a intra în competiție trebuie să ne trimiți lucrarea ta până la data de 4 octombrie 2026. Detalii suplimentare: <a href="https://danubeartmaster.eu/ro/rulebook">https://danubeartmaster.eu/ro/rulebook</a></p>
+<p>Această confirmare este necesară pentru a ne asigura că avem adresa ta de e-mail corectă. Dacă nu ai solicitat crearea unui cont pe platforma concursului Artistul Dunării, ignoră acest mesaj.</p>
+<p>Mult succes!</p>
+<p>Echipa GWP România</p>
 </body>
 
 </html>
