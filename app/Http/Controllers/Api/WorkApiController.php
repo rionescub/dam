@@ -68,10 +68,19 @@ class WorkApiController extends Controller
         $contestIds = Contest::where('team_id', $team->id)->pluck('id');
 
         // Fetch works that match any of the contest IDs and are set to show on front
-        $works = Work::with('details')
+        $works = Work::with(['details', 'contest'])
             ->whereIn('contest_id', $contestIds)
             ->where('view_on_front', 1)
             ->get();
+
+        // Group works on the front by the contest year (start_date), not the
+        // participant-entered "Year (or Class)" field on work details.
+        $works->each(function ($work) {
+            $work->year = $work->contest?->start_date?->year;
+            if ($work->details) {
+                $work->details->year = $work->year;
+            }
+        });
 
         return response()->json($works);
     }
@@ -158,7 +167,7 @@ class WorkApiController extends Controller
 
         // Check if the current date is within the submission period
         $currentDate = Carbon::now();
-        if ($currentDate->lt($contest->start_date) || $currentDate->gt($contest->end_date)) {
+        if ($currentDate->lt($contest->start_date->startOfDay()) || $currentDate->gt($contest->end_date->endOfDay())) {
             return response()->json(['message' => 'Submissions are only allowed between the contest start and end dates.'], 403);
         }
 
