@@ -10,7 +10,6 @@
 <p>Herzlichen Glückwunsch! Du hast dich erfolgreich für den Wettbewerb „Danube Art Master {{ date('Y') }}“ registriert!</p>
 <p>Um deine E-Mail-Adresse zu bestätigen, folge bitte dem untenstehenden Link:</p>
 <a href="{{ $verificationUrl }}">E-Mail bestätigen</a>
-</body>
 <p>Was kommt als Nächstes?</p>
 <ol>
     <li>Sei kreativ – erstelle ein Kunstwerk, eine Fotografie oder ein Video und reiche ein.</li>

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Outl1ne\NovaSettings\NovaSettings;
 
@@ -26,15 +27,17 @@ class ContactApiController extends Controller
             'team' => 'required|exists:teams,link',
         ]);
 
-        if (env('APP_ENV') !== 'local') {
+        if (config('app.env') !== 'local') {
             $recaptchaResponse = $request->input('recaptcha');
-            $recaptchaSecret = env('RECAPTCHA_SECRET_KEY');
+            $recaptchaSecret = config('services.recaptcha.secret');
             $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
                 'secret' => $recaptchaSecret,
                 'response' => $recaptchaResponse,
             ]);
 
             if (!$response->json('success')) {
+                Log::warning('reCAPTCHA verification failed', $response->json() ?? []);
+
                 return response()->json(['error' => 'reCAPTCHA verification failed'], 422);
             }
         }

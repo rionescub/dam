@@ -12,7 +12,6 @@
         uspeha pri ustvarjanju!</p>
     <p>Za potrditev naslova e-po ste, vam prosimo, da sledite povezavi spodaj:</p>
     <a href="{{ $verificationUrl }}">Potrditev e-po ste</a>
-</body>
 <p> Kaj sledi?</p>
 <ol>
     <li>Priprava dela: Ustvarite originalno delo, ki je navdihnjeno z Donavo (umetnost, fotografija ali video).</li>

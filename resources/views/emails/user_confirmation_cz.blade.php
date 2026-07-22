@@ -1,4 +1,11 @@
-<title>Potvrzení e-mailové adresy</title>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Potvrzení e-mailové adresy</title>
+</head>
+
+<body>
 <p>Dobrý den, {{ $user->first_name }}!</p>
 <p>Gratulujeme! Úspěšně jste se zaregistrovali k účasti v soutěži „Umělec Dunaje {{ date('Y') }}”!</p>
 <p>Děkujeme za váš zájem a ochotu přispět k ochraně životního prostředí svými uměleckými díly. Těšíme se, jak vás inspiruje Dunaj a jeho přítoky.</p>
@@ -15,3 +22,6 @@
 <p>Přejeme hodně úspěchů a inspirace při tvorbě vašeho díla!</p>
 <p>S pozdravem,</p>
 <p>Tým „Umělec Dunaje {{ date('Y') }}”</p>
+</body>
+
+</html>

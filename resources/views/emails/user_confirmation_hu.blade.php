@@ -6,14 +6,13 @@
 </head>
 
 <body>
-<p>Jó napot, Monika!</p>
+<p>Jó napot, {{ $user->first_name }}!</p>
 <p>Gratulálunk! Sikeresen regisztráltál a „Duna Művészeti Mestere {{ date('Y') }}” versenyre!</p>
 <p>Köszönjük az érdeklődésedet és azt, hogy művészi alkotásaiddal hozzájárulsz a környezetvédelemhez. Alig várjuk,
     hogy
     láthassuk, hogyan inspirál téged a Duna és mellékfolyói.</p>
 <p>Az email-címed megerősítéséhez kérjük, kövesd az alábbi linket</p>
 <a href="{{ $verificationUrl }}">Email megerősítése</a>
-</body>
 <p> Mi következik?</p>
 <ol>
     <li>Készítsd el az alkotásodat: Hozz létre egy eredeti művet, amelyet a Duna inspirált (művészet, fotó vagy

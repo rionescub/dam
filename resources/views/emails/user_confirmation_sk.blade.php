@@ -10,7 +10,6 @@
 <p>Blahoželáme! Úspešne ste sa zaregistrovali do súťaže „Danube Art Master {{ date('Y') }}“!</p>
 <p>Ak chcete potvrdiť svoju e-mailovú adresu, kliknite na nasledujúci odkaz:</p>
 <a href="{{ $verificationUrl }}">Potvrdiť e-mail</a>
-</body>
 <p>Čo nasleduje?</p>
 <ol>
     <li>Buďte kreatívni – vytvorte umelecké dielo, fotografiu alebo video a odošlite ho.</li>

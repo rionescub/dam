@@ -11,7 +11,6 @@
 <p>Hvala vam na interesovanju i na želji da doprinesete zaštiti okoliša kroz svoja umjetnička ostvarenja. Jedva čekamo da vidimo kako će vas Dunav i njegovi pritoci inspirisati.</p>
 <p>Molimo vas da kliknete na link ispod kako biste potvrdili svoju e-mail adresu:</p>
 <a href="{{ $verificationUrl }}">Potvrdi e-mail</a>
-</body>
 <p>Šta slijedi?</p>
 <ol>
     <li>Pripremite rad: Kreirajte originalno djelo inspirirano Dunavom (likovna umjetnost, fotografija ili video).</li>
