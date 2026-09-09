@@ -12,8 +12,7 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
+        // The site itself is a separate frontend, so / sends visitors to Nova.
+        $this->get('/')->assertRedirect('/admin/login');
     }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8d3a22b3943dabf7dacde7b26bfdce74",
+    "content-hash": "306e678a391ffd2698c3dbc4b28758d4",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -326,7 +326,7 @@
         },
         {
             "name": "contest/running",
-            "version": "dev-rc_1",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./nova-components/Running",
@@ -3286,16 +3286,16 @@
         },
         {
             "name": "norman-huth/nova-basic-package",
-            "version": "1.2.6",
+            "version": "1.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Muetze42/nova-basic-package.git",
-                "reference": "2252ccdfc184ca4fef3aa562bd5345617eb70823"
+                "reference": "a1b2c14bcc61ac05d775cc4082a54955b46b1957"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Muetze42/nova-basic-package/zipball/2252ccdfc184ca4fef3aa562bd5345617eb70823",
-                "reference": "2252ccdfc184ca4fef3aa562bd5345617eb70823",
+                "url": "https://api.github.com/repos/Muetze42/nova-basic-package/zipball/a1b2c14bcc61ac05d775cc4082a54955b46b1957",
+                "reference": "a1b2c14bcc61ac05d775cc4082a54955b46b1957",
                 "shasum": ""
             },
             "require": {
@@ -3329,17 +3329,8 @@
                 "issues": "https://github.com/Muetze42/nova-basic-package/issues",
                 "source": "https://github.com/Muetze42/nova-basic-package"
             },
-            "funding": [
-                {
-                    "url": "https://huth.it/coffee",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://ko-fi.com/normanhuth",
-                    "type": "ko_fi"
-                }
-            ],
-            "time": "2023-06-20T17:44:15+00:00"
+            "abandoned": true,
+            "time": "2026-05-30T14:52:18+00:00"
         },
         {
             "name": "norman-huth/nova-menu",
@@ -9570,6 +9561,6 @@
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
 }

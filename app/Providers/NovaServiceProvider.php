@@ -273,7 +273,11 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                             $field->getStorageDisk()
                         );
                         $teamSettingsRepo->setSetting($attribute, $path);
-                        return [$attribute => $path];
+
+                        // Returning true keeps Nova from filling the value onto the
+                        // model: the package would then save it to the first row with
+                        // this key, which belongs to another team.
+                        return true;
                     });
 
                     $field->delete(function ($request, $model, $disk, $path) use ($field, $teamSettingsRepo) {
@@ -281,7 +285,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                             \Illuminate\Support\Facades\Storage::disk($disk ?: $field->getStorageDisk())->delete($path);
                         }
                         $teamSettingsRepo->setSetting($field->attribute, null);
-                        return [$field->attribute => null];
+
+                        return true;
                     });
                 } else {
                     $field->fillUsing(function ($request, $model, $attribute, $requestAttribute) use ($teamSettingsRepo) {

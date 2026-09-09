@@ -242,3 +242,15 @@ class ExportAsCsv extends Action
         throw new InvalidArgumentException('The Export As CSV action may not be registered as a standalone action.');
     }
 }
+
+namespace App\Nova\Actions;
+
+/**
+ * This file replaces Nova's own ExportAsCsv, so its class name does not match
+ * its path. Autoloading `App\Nova\Actions\ExportToCsv` (Nova scans app/Nova on
+ * every boot) would otherwise include the file again and fatal on redeclaring
+ * ExportAsCsv. Declaring the expected class keeps the include to one.
+ */
+class ExportToCsv extends \Laravel\Nova\Actions\ExportAsCsv
+{
+}
