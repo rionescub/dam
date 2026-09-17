@@ -194,13 +194,19 @@ class UserApiController extends Controller
 
         $user->current_team_id = $current_team->id;
         $user->email_verification_token = Str::random(32);
+        // Auto-activate on registration (temporary, while mail delivery is unreliable)
+        $user->email_verified_at = now();
         $user->save();
 
         // Generate the verification URL
         $verificationUrl = url($request->site_url . '/verify-email?token=' . $user->email_verification_token);
 
-        // Send the confirmation email
-        Mail::to($user->email)->send(new UserConfirmationMail($user, $verificationUrl));
+        // Send the confirmation email; don't fail registration if mail delivery fails
+        try {
+            Mail::to($user->email)->send(new UserConfirmationMail($user, $verificationUrl));
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         // Generate an authentication token
         $token = $user->createToken('auth_token')->plainTextToken;
