@@ -124,6 +124,15 @@ class User extends Resource
             Boolean::make('Further Communications')
                 ->sortable(),
 
+            Boolean::make('Verified', 'email_verified_at')
+                ->resolveUsing(fn ($value) => ! is_null($value))
+                ->exceptOnForms()
+                ->sortable(),
+
+            DateTime::make('Registered At', 'created_at')
+                ->exceptOnForms()
+                ->sortable(),
+
             DateTime::make('Email Verified At', 'email_verified_at')
                 ->hideFromIndex()
                 ->hideWhenUpdating()
@@ -188,6 +197,8 @@ class User extends Resource
                     'email'         => $model->email,
                     'role'          => $model->role,
                     'date_of_birth' => $model->date_of_birth,
+                    'registered_at' => $model->created_at,
+                    'verified'      => $model->email_verified_at ? 'yes' : 'no',
                 ];
             }),
         ];

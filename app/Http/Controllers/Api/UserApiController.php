@@ -226,9 +226,12 @@ class UserApiController extends Controller
             return response()->json(['error' => 'Invalid verification token'], 400);
         }
 
-        $user->email_verified_at = now();
-        $user->email_verification_token = null;
-        $user->save();
+        // Accounts are already active on registration, so the link only confirms the
+        // address. Keep the token so the link stays valid if it is opened again.
+        if ($user->email_verified_at === null) {
+            $user->email_verified_at = now();
+            $user->save();
+        }
 
         return response()->json(['message' => 'Email successfully verified'], 200);
     }
