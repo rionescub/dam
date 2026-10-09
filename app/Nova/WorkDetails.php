@@ -70,7 +70,8 @@ class WorkDetails extends Resource
         return [
             ID::make()->sortable(),
 
-            BelongsTo::make('Work'),
+            BelongsTo::make('Work')
+                ->searchable(),
 
             Text::make('Full Name', 'full_name')
                 ->sortable()

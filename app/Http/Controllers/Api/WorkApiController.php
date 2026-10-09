@@ -182,21 +182,8 @@ class WorkApiController extends Controller
 
         // Handle file upload
         if ($request->hasFile('file') && $request->file('file')->isValid()) {
-            $directory = 'public/works/' . $request->contest_id;
-
-            // ensure directory exists with 0755 permissions
-            Storage::disk('local')->makeDirectory($directory, 0755, true);
-
-            // store file
-            $stored = $request->file('file')->store($directory);
-
-            // enforce 0755 on the stored file
-            $absolute = storage_path('app/' . $stored);
-            if (file_exists($absolute)) {
-                chmod($absolute, 0755);
-            }
-
-            $work->file_path = str_replace('public/', '', $stored);
+            // public disk => dirs 0755, files 0644 (readable by the web server)
+            $work->file_path = $request->file('file')->store('works/' . $request->contest_id, 'public');
         }
 
         // Save the video URL if provided
@@ -260,9 +247,7 @@ class WorkApiController extends Controller
         $work->description = $request->description;
 
         if ($request->hasFile('file')) {
-            $path = 'public/works/' . $work->contest_id;
-            $filePath = $request->file('file')->store($path);
-            $work->file_path = str_replace('public/', '', $filePath);
+            $work->file_path = $request->file('file')->store('works/' . $work->contest_id, 'public');
         }
 
         // Update video URL if provided

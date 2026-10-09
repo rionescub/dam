@@ -124,20 +124,14 @@ class Work extends Resource
                         return null;
                     }
 
-                    $mime = Storage::disk($disk)->mimeType($value) ?: 'image/jpeg';
-                    $data = base64_encode(Storage::disk($disk)->get($value));
-
-                    return 'data:' . $mime . ';base64,' . $data;
+                    return Storage::disk($disk)->url($value);
                 })
                 ->preview(function ($value, $disk) {
                     if (!$value || !Storage::disk($disk)->exists($value)) {
                         return null;
                     }
 
-                    $mime = Storage::disk($disk)->mimeType($value) ?: 'image/jpeg';
-                    $data = base64_encode(Storage::disk($disk)->get($value));
-
-                    return 'data:' . $mime . ';base64,' . $data;
+                    return Storage::disk($disk)->url($value);
                 })
                 ->hideFromIndex(),
 
