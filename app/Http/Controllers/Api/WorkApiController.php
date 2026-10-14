@@ -226,7 +226,9 @@ class WorkApiController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
+            'title_en' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'description_en' => 'nullable|string',
             'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf,webp|max:16384',
             'video_url' => [
                 'nullable',
@@ -245,6 +247,14 @@ class WorkApiController extends Controller
 
         $work->name = $request->title;
         $work->description = $request->description;
+
+        if ($request->has('title_en')) {
+            $work->title_en = $request->title_en;
+        }
+
+        if ($request->has('description_en')) {
+            $work->description_en = $request->description_en;
+        }
 
         if ($request->hasFile('file')) {
             $work->file_path = $request->file('file')->store('works/' . $work->contest_id, 'public');

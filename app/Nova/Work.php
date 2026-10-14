@@ -5,6 +5,7 @@ namespace App\Nova;
 use App\Nova\Resource;
 use App\Nova\Filters\ContestFilter;
 use App\Nova\Filters\ContestYearFilter;
+use App\Nova\Filters\WorkDetailsFilter;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Nova\Actions\ExportAsCsv;
 use Laravel\Nova\Fields\BelongsTo;
@@ -192,6 +193,8 @@ class Work extends Resource
         return [
             new ContestYearFilter(),
             new ContestFilter(),
+            new WorkDetailsFilter('type', 'Category'),
+            new WorkDetailsFilter('age_group', 'Age Group'),
         ];
     }
 

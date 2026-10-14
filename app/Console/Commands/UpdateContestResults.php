@@ -7,12 +7,15 @@ use App\Models\Contest;
 use App\Models\Work;
 use App\Models\Score;
 use App\Models\Diploma;
+use App\Models\Team;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class UpdateContestResults extends Command
 {
-    protected $signature = 'contest:update-results';
+    protected $signature = 'contest:update-results
+                            {--team= : Only process contests of this team (its link, e.g. ro)}
+                            {--contest= : Only process this contest ID, regardless of its ceremony date}';
     protected $description = 'Update contest results if the jury date has passed';
 
     public function __construct()
@@ -22,11 +25,37 @@ class UpdateContestResults extends Command
 
     public function handle()
     {
-        $contests = Contest::with(['works.scores', 'works.details'])
-            ->whereDate('ceremony_date', Carbon::today())
-            ->get();
+        $query = Contest::with(['works.scores', 'works.details']);
+
+        if ($this->option('team') !== null) {
+            $team = Team::where('link', $this->option('team'))->first();
+
+            if (! $team) {
+                $this->error("Team '{$this->option('team')}' not found.");
+
+                return self::FAILURE;
+            }
+
+            $query->where('team_id', $team->id);
+        }
+
+        if ($this->option('contest') !== null) {
+            $query->whereKey($this->option('contest'));
+        } else {
+            $query->whereDate('ceremony_date', Carbon::today());
+        }
+
+        $contests = $query->get();
+
+        if ($contests->isEmpty()) {
+            $this->warn('No matching contests found.');
+
+            return self::SUCCESS;
+        }
 
         foreach ($contests as $contest) {
+            $this->line("Processing contest #{$contest->id}: {$contest->name}");
+
             $works = $contest->works()->withoutTrashed()->get();
 
             foreach ($works as $work) {
