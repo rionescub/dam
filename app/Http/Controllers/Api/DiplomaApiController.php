@@ -34,6 +34,8 @@ class DiplomaApiController extends Controller
      */
     public function download(Request $request, $id)
     {
+        abort(403, 'Diploma downloads are temporarily disabled.');
+
         // Fetch the diploma and ensure it belongs to the user's team
         $diploma = Diploma::where('id', $id)
             ->with('user', 'work', 'contest', 'work.details')
