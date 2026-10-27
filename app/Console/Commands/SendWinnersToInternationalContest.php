@@ -8,6 +8,7 @@ use App\Models\Work;
 use App\Models\WorkDetails;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class SendWinnersToInternationalContest extends Command
 {
@@ -23,7 +24,7 @@ class SendWinnersToInternationalContest extends Command
      *
      * @var string
      */
-    protected $description = 'Clone rank 1 winners (per type and age group) from finished contests into the active EN contest';
+    protected $description = 'Clone all rank 1 winners (per type and age group, ties included) from finished contests into the active EN contest';
 
     /**
      * Execute the console command.
@@ -66,15 +67,16 @@ class SendWinnersToInternationalContest extends Command
         }
 
         $totalCloned = 0;
+        $totalSkipped = 0;
 
         foreach ($sourceContests as $contest) {
             $this->info('Processing contest ID: ' . $contest->id);
 
+            // Every rank 1 work is sent, so works tied for first place in a category all go
             $works = Work::with('details')
                 ->where('contest_id', $contest->id)
-                ->whereHas('details', function ($query): void {
-                    $query->where('rank', 1);
-                })
+                ->where('rank', 1)
+                ->has('details')
                 ->get();
 
             if ($works->isEmpty()) {
@@ -82,38 +84,40 @@ class SendWinnersToInternationalContest extends Command
                 continue;
             }
 
-            $categoriesSeen = [];
             $clonedForContest = 0;
 
             foreach ($works as $work) {
-                /** @var WorkDetails|null $details */
+                /** @var WorkDetails $details */
                 $details = $work->details;
 
-                if (! $details) {
+                // Includes deleted clones, so a winner removed from the EN contest isn't sent again
+                $alreadyCloned = Work::withTrashed()
+                    ->where('contest_id', $targetContest->id)
+                    ->where('source_work_id', $work->id)
+                    ->exists();
+
+                if ($alreadyCloned) {
+                    $this->info(sprintf('  Skipped work #%d: already in the EN contest', $work->id));
+                    $totalSkipped++;
                     continue;
                 }
 
-                $type = (string) $details->type;
-                $ageGroup = (string) $details->age_group;
-                $categoryKey = $ageGroup . '||' . $type;
+                $clonedWork = DB::transaction(function () use ($work, $details, $targetContest, $now): Work {
+                    $clonedWork = $work->replicate();
+                    $clonedWork->contest_id = $targetContest->id;
+                    $clonedWork->source_work_id = $work->id;
+                    $clonedWork->created_at = $now;
+                    $clonedWork->updated_at = $now;
+                    $clonedWork->save();
 
-                if (isset($categoriesSeen[$categoryKey])) {
-                    continue;
-                }
+                    $clonedDetails = $details->replicate();
+                    $clonedDetails->work_id = $clonedWork->id;
+                    $clonedDetails->created_at = $now;
+                    $clonedDetails->updated_at = $now;
+                    $clonedDetails->save();
 
-                $categoriesSeen[$categoryKey] = true;
-
-                $clonedWork = $work->replicate();
-                $clonedWork->contest_id = $targetContest->id;
-                $clonedWork->created_at = $now;
-                $clonedWork->updated_at = $now;
-                $clonedWork->push();
-
-                $clonedDetails = $details->replicate();
-                $clonedDetails->work_id = $clonedWork->id;
-                $clonedDetails->created_at = $now;
-                $clonedDetails->updated_at = $now;
-                $clonedDetails->push();
+                    return $clonedWork;
+                });
 
                 $clonedForContest++;
                 $totalCloned++;
@@ -122,21 +126,17 @@ class SendWinnersToInternationalContest extends Command
                     sprintf(
                         '  Cloned work #%d (Age group: %s, Type: %s) to EN contest as work #%d',
                         $work->id,
-                        $ageGroup,
-                        $type,
+                        $details->age_group,
+                        $details->type,
                         $clonedWork->id
                     )
                 );
             }
 
-            if ($clonedForContest === 0) {
-                $this->info('  No unique category winners cloned for this contest.');
-            } else {
-                $this->info('  Cloned ' . $clonedForContest . ' category winners from this contest.');
-            }
+            $this->info('  Cloned ' . $clonedForContest . ' category winners from this contest.');
         }
 
-        $this->info('Cloning finished. Total cloned works: ' . $totalCloned . '.');
+        $this->info('Cloning finished. Total cloned works: ' . $totalCloned . ', already cloned: ' . $totalSkipped . '.');
 
         return Command::SUCCESS;
     }
