@@ -62,4 +62,10 @@ class Work extends Model
     {
         return $this->hasOne(WorkDetails::class);
     }
+
+    /** The national work this one was cloned from by the international send; it belongs to another team. */
+    public function sourceWork()
+    {
+        return $this->belongsTo(Work::class, 'source_work_id')->withoutGlobalScope(ContestTeam::class)->withTrashed();
+    }
 }

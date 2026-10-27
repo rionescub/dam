@@ -2,14 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Contest;
-use App\Models\Diploma;
-use App\Models\Team;
-use App\Models\Work;
-use App\Models\WorkDetails;
-use Carbon\Carbon;
+use App\Services\InternationalContestSender;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class SendWinnersToInternationalContest extends Command
 {
@@ -18,7 +12,8 @@ class SendWinnersToInternationalContest extends Command
      *
      * @var string
      */
-    protected $signature = 'app:send-to-international-contest';
+    protected $signature = 'app:send-to-international-contest
+                            {--contest=* : Only send these contest IDs (repeat for several, e.g. --contest=18 --contest=24)}';
 
     /**
      * The console command description.
@@ -30,23 +25,15 @@ class SendWinnersToInternationalContest extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(InternationalContestSender $sender): int
     {
-        $now = Carbon::now();
-        $currentYear = (int) $now->year;
-
-        $enTeam = Team::where('link', 'en')->first();
-
-        if (! $enTeam) {
+        if (! $sender->enTeam()) {
             $this->error('EN team (link = en) not found.');
 
             return Command::FAILURE;
         }
 
-        $targetContest = Contest::where('team_id', $enTeam->id)
-            ->where('ceremony_date', '>', $now)
-            ->orderBy('ceremony_date')
-            ->first();
+        $targetContest = $sender->targetContest();
 
         if (! $targetContest) {
             $this->error('No active contest (ceremony date after now) found for EN team.');
@@ -56,10 +43,12 @@ class SendWinnersToInternationalContest extends Command
 
         $this->info('Target EN contest ID: ' . $targetContest->id);
 
-        $sourceContests = Contest::whereYear('start_date', $currentYear)
-            ->where('ceremony_date', '<', $now)
-            ->where('team_id', '!=', $enTeam->id)
-            ->get();
+        $contestIds = $this->option('contest');
+        $sourceContests = $sender->finishedContests($contestIds);
+
+        foreach (array_diff($contestIds, $sourceContests->pluck('id')->map(fn ($id) => (string) $id)->all()) as $missingId) {
+            $this->warn("Contest {$missingId} skipped: not a finished non-EN contest of this year.");
+        }
 
         if ($sourceContests->isEmpty()) {
             $this->info('No finished contests found for the current year.');
@@ -73,74 +62,37 @@ class SendWinnersToInternationalContest extends Command
         foreach ($sourceContests as $contest) {
             $this->info('Processing contest ID: ' . $contest->id);
 
-            // contest:update-results gives every work a diploma; without them every work is still on the default rank 1
-            if (! Diploma::where('contest_id', $contest->id)->exists()) {
+            if (! $sender->isRanked($contest)) {
                 $this->warn('  Skipped: results not calculated yet. Run contest:update-results --contest=' . $contest->id . ' first.');
                 continue;
             }
 
-            // Every rank 1 work is sent, so works tied for first place in a category all go
-            $works = Work::with('details')
-                ->where('contest_id', $contest->id)
-                ->where('rank', 1)
-                ->has('details')
-                ->get();
+            $winnerCount = $sender->winners($contest)->count();
 
-            if ($works->isEmpty()) {
+            if ($winnerCount === 0) {
                 $this->info('  No rank 1 works found for this contest.');
                 continue;
             }
 
-            $clonedForContest = 0;
+            $clones = $sender->send($contest, $targetContest);
 
-            foreach ($works as $work) {
-                /** @var WorkDetails $details */
-                $details = $work->details;
-
-                // Includes deleted clones, so a winner removed from the EN contest isn't sent again
-                $alreadyCloned = Work::withTrashed()
-                    ->where('contest_id', $targetContest->id)
-                    ->where('source_work_id', $work->id)
-                    ->exists();
-
-                if ($alreadyCloned) {
-                    $this->info(sprintf('  Skipped work #%d: already in the EN contest', $work->id));
-                    $totalSkipped++;
-                    continue;
-                }
-
-                $clonedWork = DB::transaction(function () use ($work, $details, $targetContest, $now): Work {
-                    $clonedWork = $work->replicate();
-                    $clonedWork->contest_id = $targetContest->id;
-                    $clonedWork->source_work_id = $work->id;
-                    $clonedWork->created_at = $now;
-                    $clonedWork->updated_at = $now;
-                    $clonedWork->save();
-
-                    $clonedDetails = $details->replicate();
-                    $clonedDetails->work_id = $clonedWork->id;
-                    $clonedDetails->created_at = $now;
-                    $clonedDetails->updated_at = $now;
-                    $clonedDetails->save();
-
-                    return $clonedWork;
-                });
-
-                $clonedForContest++;
-                $totalCloned++;
-
+            foreach ($clones as $clonedWork) {
                 $this->info(
                     sprintf(
                         '  Cloned work #%d (Age group: %s, Type: %s) to EN contest as work #%d',
-                        $work->id,
-                        $details->age_group,
-                        $details->type,
+                        $clonedWork->source_work_id,
+                        $clonedWork->details->age_group,
+                        $clonedWork->details->type,
                         $clonedWork->id
                     )
                 );
             }
 
-            $this->info('  Cloned ' . $clonedForContest . ' category winners from this contest.');
+            $skipped = $winnerCount - $clones->count();
+            $totalCloned += $clones->count();
+            $totalSkipped += $skipped;
+
+            $this->info('  Cloned ' . $clones->count() . ' category winners from this contest' . ($skipped ? ", {$skipped} already in the EN contest." : '.'));
         }
 
         $this->info('Cloning finished. Total cloned works: ' . $totalCloned . ', already cloned: ' . $totalSkipped . '.');

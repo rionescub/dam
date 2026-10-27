@@ -5,6 +5,8 @@ namespace App\Nova;
 use App\Nova\Resource;
 use App\Nova\Filters\ContestFilter;
 use App\Nova\Filters\ContestYearFilter;
+use App\Nova\Filters\SentFromContestFilter;
+use App\Scopes\CurrentTeam;
 use App\Nova\Filters\WorkDetailsFilter;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Nova\Actions\ExportAsCsv;
@@ -28,7 +30,7 @@ class Work extends Resource
 
     public static function indexQuery(NovaRequest $request, $query)
     {
-        $query->with(['contest', 'user', 'details']);
+        $query->with(['contest', 'user', 'details', 'sourceWork.contest' => fn ($query) => $query->withoutGlobalScope(CurrentTeam::class)]);
 
         $user = $request->user();
 
@@ -167,6 +169,19 @@ class Work extends Resource
                     return $query->where('current_team_id', $request->user()->current_team_id);
                 }),
 
+            Text::make('Sent from', function () {
+                if (! $this->sourceWork) {
+                    return null;
+                }
+
+                // Without the team scope: the source contest is another team's. The index eager loads it.
+                $contest = $this->sourceWork->relationLoaded('contest')
+                    ? $this->sourceWork->contest
+                    : $this->sourceWork->contest()->withoutGlobalScope(CurrentTeam::class)->first();
+
+                return ($contest->name ?? 'Unknown contest') . ' (work #' . $this->sourceWork->id . ')';
+            })->exceptOnForms(),
+
             HasMany::make('Scores'),
         ];
     }
@@ -195,6 +210,7 @@ class Work extends Resource
             new ContestFilter(),
             new WorkDetailsFilter('type', 'Category'),
             new WorkDetailsFilter('age_group', 'Age Group'),
+            new SentFromContestFilter(),
         ];
     }
 

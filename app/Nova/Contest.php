@@ -19,6 +19,9 @@ use App\Nova\Metrics\UpcomingContests;
 use App\Nova\Filters\ContestTypeFilter;
 use App\Nova\Metrics\FinishingContests;
 use Laravel\Nova\Actions\ExportAsCsv;
+use Laravel\Nova\Http\Requests\ActionRequest;
+use App\Nova\Actions\SendToInternationalContest;
+use App\Services\InternationalContestSender;
 
 class Contest extends Resource
 {
@@ -157,6 +160,20 @@ class Contest extends Resource
                     ];
                 }
             ),
+            SendToInternationalContest::make()
+                ->sole()
+                ->canSee(function (NovaRequest $request) {
+                    // Running the action resolves it without a contest; canRun checks that one
+                    if ($request instanceof ActionRequest) {
+                        return $request->user()->is_admin();
+                    }
+
+                    return $request->user()->is_admin()
+                        && $this->resource->exists
+                        && app(InternationalContestSender::class)->canSend($this->resource);
+                })
+                ->canRun(fn (NovaRequest $request, $contest) => $request->user()->is_admin()
+                    && app(InternationalContestSender::class)->canSend($contest)),
         ];
     }
 }
