@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Contest;
+use App\Models\Diploma;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Work;
@@ -40,9 +41,19 @@ class SendWinnersToInternationalContestTest extends TestCase
         ]);
     }
 
-    protected function work(int $rank, string $type = 'photo', string $ageGroup = '6-10'): Work
+    /** A work in a ranked contest: contest:update-results gives each work a diploma. */
+    protected function work(int $rank, string $type = 'photo', string $ageGroup = '6-10', bool $ranked = true): Work
     {
         $work = Work::factory()->create(['contest_id' => $this->national->id, 'rank' => $rank]);
+
+        if ($ranked) {
+            Diploma::create([
+                'user_id' => $work->user_id,
+                'contest_id' => $work->contest_id,
+                'work_id' => $work->id,
+                'description' => 'Diploma',
+            ]);
+        }
 
         WorkDetails::create([
             'work_id' => $work->id,
@@ -77,6 +88,20 @@ class SendWinnersToInternationalContestTest extends TestCase
         $this->assertCount(1, $this->clonesOf($otherCategory));
         $this->assertCount(0, $this->clonesOf($second));
         $this->assertSame('photo', $this->clonesOf($first)->first()->details->type);
+    }
+
+    public function test_it_skips_a_contest_whose_results_were_not_calculated(): void
+    {
+        // Unranked works all keep the default rank 1
+        $unranked = $this->work(1, ranked: false);
+        $alsoUnranked = $this->work(1, ranked: false);
+
+        $this->artisan('app:send-to-international-contest')
+            ->expectsOutput('  Skipped: results not calculated yet. Run contest:update-results --contest=' . $this->national->id . ' first.')
+            ->assertSuccessful();
+
+        $this->assertCount(0, $this->clonesOf($unranked));
+        $this->assertCount(0, $this->clonesOf($alsoUnranked));
     }
 
     public function test_running_it_again_does_not_duplicate_works(): void

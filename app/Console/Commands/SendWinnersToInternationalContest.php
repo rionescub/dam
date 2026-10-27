@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Contest;
+use App\Models\Diploma;
 use App\Models\Team;
 use App\Models\Work;
 use App\Models\WorkDetails;
@@ -71,6 +72,12 @@ class SendWinnersToInternationalContest extends Command
 
         foreach ($sourceContests as $contest) {
             $this->info('Processing contest ID: ' . $contest->id);
+
+            // contest:update-results gives every work a diploma; without them every work is still on the default rank 1
+            if (! Diploma::where('contest_id', $contest->id)->exists()) {
+                $this->warn('  Skipped: results not calculated yet. Run contest:update-results --contest=' . $contest->id . ' first.');
+                continue;
+            }
 
             // Every rank 1 work is sent, so works tied for first place in a category all go
             $works = Work::with('details')

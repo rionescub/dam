@@ -3,9 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\Contest;
+use App\Models\Score;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Work;
+use App\Models\WorkDetails;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -96,6 +98,38 @@ class UpdateContestResultsCommandTest extends TestCase
             ->assertSuccessful();
 
         $this->assertNotProcessed($hungarian);
+    }
+
+    public function test_works_with_equal_scores_share_a_rank(): void
+    {
+        $contest = Contest::factory()->create(['team_id' => $this->romania->id, 'ceremony_date' => today()]);
+
+        [$first, $tiedFirst, $third, $fourth] = collect([[10, 10, 10], [10, 10, 10], [5, 5, 5], [1, 1, 1]])
+            ->map(function (array $criteria) use ($contest) {
+                $work = Work::factory()->create(['contest_id' => $contest->id]);
+                WorkDetails::create([
+                    'work_id' => $work->id,
+                    'full_name' => 'Participant',
+                    'city' => 'City',
+                    'type' => 'img',
+                    'age_group' => '6-11',
+                ]);
+                Score::factory()->create([
+                    'work_id' => $work->id,
+                    'creativity_score' => $criteria[0],
+                    'link_score' => $criteria[1],
+                    'aesthetic_score' => $criteria[2],
+                ]);
+
+                return $work;
+            });
+
+        $this->artisan('contest:update-results')->assertSuccessful();
+
+        $this->assertSame(1, $first->fresh()->rank);
+        $this->assertSame(1, $tiedFirst->fresh()->rank);
+        $this->assertSame(3, $third->fresh()->rank);
+        $this->assertSame(4, $fourth->fresh()->rank);
     }
 
     public function test_unknown_team_fails(): void

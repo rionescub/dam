@@ -85,9 +85,14 @@ class UpdateContestResults extends Command
                     ]);
 
                     $rankedWorks = $groupedWorks->sortByDesc('total_score')->values();
+                    $previousScore = null;
+                    $previousRank = 0;
 
+                    // Equal scores share a rank and the next one skips ahead (30, 30, 20 → 1, 1, 3)
                     foreach ($rankedWorks as $index => $work) {
-                        $work->rank = $index + 1;
+                        $work->rank = $work->total_score === $previousScore ? $previousRank : $index + 1;
+                        $previousScore = $work->total_score;
+                        $previousRank = $work->rank;
                         $work->save();
                         Log::info('Assigned rank', [
                             'work_id' => $work->id,
