@@ -25,7 +25,7 @@
             'prize' => 'Premiul',
             'in_category' => 'la categoria',
             'years' => 'ani',
-            'subcategory' => 'subcategorie',
+            'subcategory' => 'subcategoria',
             'president' => 'Președinte',
             'work_name' => 'Nume Lucrare',
         ],
@@ -92,6 +92,9 @@
     ];
 @endphp
 
+@if ($lang === 'ro')
+@include('pdf.diploma_ro')
+@else
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
 <!doctype html>
@@ -174,11 +177,13 @@
             text-align: center
         }
 
-        .logo img {
-            height: auto;
+        .logo .dam-logo {
             width: 120px;
-            margin: 40px auto;
-            diplay: block;
+            margin: 30px auto 20px;
+        }
+
+        .logo .sponsor {
+            text-align: center;
         }
 
         .title {
@@ -258,16 +263,43 @@
 <div class="background"></div>
 <div class="diploma-container">
     <div class="diploma-left">
-        <div class="logo">
-            <img src="{{ asset('dam_logo.png') }}" class="mx-auto" alt="DAM ">
-            <img src="{{ asset('ipcdr.png') }}" class="mx-auto" alt="ICPDR IKSD">
-            <img src="{{ asset('erste.svg') }}" class="mx-auto" alt="Erste">
-            <img src="{{ asset('gwp.png') }}" class="mx-auto" alt="GWP">
+        @php
+            // Sponsors the contest's team added in Nova, logos on the Nova disk
+            $disk = \Illuminate\Support\Facades\Storage::disk(config('nova.storage_disk', 'public'));
+            $sponsorLogos = \App\Models\Sponsor::withoutGlobalScopes()
+                ->where('team_id', $diploma->contest->team_id)
+                ->whereNotNull('image')
+                ->orderByRaw("CASE type WHEN 'sponsor' THEN 0 WHEN 'partner' THEN 1 WHEN 'supporter' THEN 2 ELSE 3 END")
+                ->orderBy('id')
+                ->get()
+                ->filter(fn ($sponsor) => $disk->exists($sponsor->image))
+                ->map(function ($sponsor) use ($disk) {
+                    $path = $disk->path($sponsor->image);
+                    [$w, $h] = @getimagesize($path) ?: [0, 0];
 
-            @if ($currentTeamId == 1)
-                <img src="{{ asset('mmap.png') }}" class="mx-auto" alt="Ministerul Apelor">
-                <img src="{{ asset('gwp.jpg') }}" class="mx-auto" alt="GWP ROmania">
-            @endif
+                    return ['path' => $path, 'name' => $sponsor->name, 'w' => $w, 'h' => $h];
+                })
+                ->values();
+
+            // Share the column height between the logos so they never spill onto a second page
+            $slot = $sponsorLogos->isEmpty() ? 0 : min(130, floor(620 / $sponsorLogos->count()));
+            $logoSize = function ($logo) use ($slot) {
+                if (! $logo['w'] || ! $logo['h']) {
+                    return 'width: 120px;';
+                }
+                $scale = min(150 / $logo['w'], ($slot - 20) / $logo['h']);
+
+                return 'width: ' . round($logo['w'] * $scale) . 'px; height: ' . round($logo['h'] * $scale) . 'px;';
+            };
+        @endphp
+        <div class="logo">
+            <img src="{{ public_path('dam_logo.png') }}" class="dam-logo" alt="DAM">
+
+            @foreach ($sponsorLogos as $logo)
+                <div class="sponsor" style="height: {{ $slot }}px;">
+                    <img src="{{ $logo['path'] }}" style="{{ $logoSize($logo) }}" alt="{{ $logo['name'] }}">
+                </div>
+            @endforeach
         </div>
     </div>
 
@@ -305,8 +337,8 @@
         <div class="signature-section">
 
             @if ($currentTeamId == 1)
-                <img src="{{ asset('signature.png') }}" class="mx-auto" alt="Signature">
-                <div class="signature">Procop Ionuț</div>
+                <img  class="mx-auto" alt="Signature">
+                <div class="signature"></div>
             @endif
             <div class="position">{{ $strings[$lang]['president'] }}</div>
         </div>
@@ -324,3 +356,4 @@
 </body>
 
 </html>
+@endif

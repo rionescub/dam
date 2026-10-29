@@ -4,6 +4,7 @@ namespace App\Nova\Actions;
 
 use App\Models\Diploma;
 use Illuminate\Bus\Queueable;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Collection;
@@ -35,6 +36,9 @@ class GenerateDiplomaPDF extends Action implements ShouldQueue
     {
         // Array to hold download URLs
         $downloadLinks = [];
+
+        // DomPDF caches custom fonts (Crimson Text) here and fails if it is missing
+        File::ensureDirectoryExists(config('dompdf.options.font_cache'));
 
         foreach ($models as $diploma) {
             // Generate the PDF

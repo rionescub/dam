@@ -7,6 +7,7 @@ use App\Models\WorkDetails;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -34,8 +35,6 @@ class DiplomaApiController extends Controller
      */
     public function download(Request $request, $id)
     {
-        abort(403, 'Diploma downloads are temporarily disabled.');
-
         // Fetch the diploma and ensure it belongs to the user's team
         $diploma = Diploma::where('id', $id)
             ->with('user', 'work', 'contest', 'work.details')
@@ -43,6 +42,9 @@ class DiplomaApiController extends Controller
         if ($diploma->user_id != $request->user()->id) {
             return response()->json(['message' => 'Unauthorized to download diploma'], Response::HTTP_FORBIDDEN);
         }
+
+        // DomPDF caches custom fonts (Crimson Text) here and fails if it is missing
+        File::ensureDirectoryExists(config('dompdf.options.font_cache'));
 
         // Generate PDF from the diploma data
         $pdf = Pdf::loadView('pdf.diploma', compact('diploma'))
