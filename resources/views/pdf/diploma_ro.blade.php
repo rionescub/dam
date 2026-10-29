@@ -1,6 +1,7 @@
 {{-- Romanian diploma, matches public/diploma_Artistul_Dunării_2026.pdf.
-     Sponsor logos, waves and signature are baked into diploma_ro_bg.jpg;
-     the transparent DAM logo and the text are laid out here (positions in pt, A4 landscape). --}}
+     Layers: sponsor column (diploma_ro_sponsors.jpg), waves (diploma_ro_bg.jpeg) on a
+     flat panel matching its top colour, signature, DAM logo, then the text
+     (positions in pt, A4 landscape). --}}
 @php
     $s = $strings['ro'];
     $details = $diploma->work->details;
@@ -36,12 +37,38 @@
             color: #1e3a8a;
         }
 
-        .bg {
+        .sponsors {
             position: absolute;
             top: 0;
             left: 0;
-            width: 841pt;
+            width: 155.5pt;
             height: 594pt;
+        }
+
+        .panel {
+            position: absolute;
+            top: 0;
+            left: 155.5pt;
+            width: 686.4pt;
+            height: 594pt;
+            background-color: #f7f7f7;
+        }
+
+        /* full panel width, bottom-aligned, keeping the image's 924x578 ratio */
+        .waves {
+            position: absolute;
+            top: 164.6pt;
+            left: 155.5pt;
+            width: 686.4pt;
+            height: 429.4pt;
+        }
+
+        .signature-image {
+            position: absolute;
+            top: 417.5pt;
+            left: 288.8pt;
+            width: 146pt;
+            height: 84.5pt;
         }
 
         /* dam_logo_glow.png is dam_logo.png padded by 100px with a white glow baked in
@@ -99,7 +126,10 @@
 </head>
 
 <body>
-<img class="bg" src="{{ public_path('diploma_ro_bg.jpg') }}" alt="">
+<img class="sponsors" src="{{ public_path('diploma_ro_sponsors.jpg') }}" alt="">
+<div class="panel"></div>
+<img class="waves" src="{{ public_path('diploma_ro_bg.jpeg') }}" alt="">
+<img class="signature-image" src="{{ public_path('diploma_ro_signature.png') }}" alt="">
 <img class="dam-logo" src="{{ public_path('dam_logo_glow.png') }}" alt="DAM">
 
 <div class="content">
